@@ -102,35 +102,91 @@ if __name__ == '__main__':
     # Book histograms
     h_nocut = {}
     h_cut = {}
-    h_nocut['pt'] = ROOT.TH1F("pt", "p_{T} [GeV]", 100, 0.0, 100.0)
-    h_nocut['PID'] = ROOT.TH1F("PID","Particle ID",50,-25,25)
-    h_nocut['ttbar_prod'] = ROOT.TH1F("ttbar_prod","ttbar production",4,0,4)
-    h_nocut['ttbar_BR'] = ROOT.TH1F("ttbar_BR","BR",6,0,6)
-    h_nocut['photon_mom'] = ROOT.TH1F("photon_mom","photon mother",50,-25,25)
-    h_nocut['photon_pt'] = ROOT.TH1F("photon_pt","Photon p_{T} [GeV]",100,0,100)
-    h_nocut['photon_eta'] = ROOT.TH1F("photon_eta","Photon #eta",100,-5,5)
-    h_nocut['photon_phi'] = ROOT.TH1F("photon_phi","Photon #phi",80,-3.2,3.2)
-    h_nocut['photon_deltaRLep'] = ROOT.TH1F('photon_deltaRLep',"#Delta R(#gamma,lepton)",100,0,6)
-    h_nocut['N_photons'] = ROOT.TH1F("N_photons","Number of Photons",5,0,5)
-    h_nocut['top_pt'] = ROOT.TH1F("top_pt","top p_{T} [GeV]",100,0,200)
-    h_nocut['top_eta'] =ROOT.TH1F("top_eta","top #eta",100,-5,5)
-    h_nocut['top_phi'] =ROOT.TH1F("top_phi","top #phi",80,-3.2,3.2)
-    h_nocut['top_m'] = ROOT.TH1F("top_m","top mass [GeV]",50,150,200)
-    h_nocut['W_m'] = ROOT.TH1F("W_m","W mass [GeV]",50,50,100)
-    h_nocut['b_m'] = ROOT.TH1F("b_m","b mass [GeV]",50,0,10)
-    h_nocut['b_pt'] = ROOT.TH1F("b_pt","b p_{T} [GeV]",100,0,200)
-    h_nocut['b_eta'] = ROOT.TH1F("b_eta","b #eta",100,-5,5)
-    h_nocut['b_phi'] =ROOT.TH1F("b_phi","b #phi",80,-3.2,3.2)
-    h_nocut['q_pt'] = ROOT.TH1F("q_pt","b p_{T} [GeV]",100,0,200)
-    h_nocut['q_eta'] = ROOT.TH1F("q_eta","b #eta",100,-5,5)
-    h_nocut['q_phi'] =ROOT.TH1F("q_phi","b #phi",80,-3.2,3.2)
-    h_nocut['nu_pt'] = ROOT.TH1F("nu_pt","Neutrino p_{T} [GeV]",100,0,200)
-    h_nocut['nu_eta'] = ROOT.TH1F("nu_eta","Neutrino #eta",100,-5,5)
-    h_nocut['nu_phi'] =ROOT.TH1F("nu_phi","Neutrino #phi",80,-3.2,3.2)
-    h_nocut['lep_pt'] = ROOT.TH1F("lep_pt","Lepton p_{T} [GeV]",100,0,200)
-    h_nocut['lep_eta'] = ROOT.TH1F("lep_eta","Lepton #eta",100,-5,5)
-    h_nocut['lep_phi'] =ROOT.TH1F("lep_phi","Lepton #phi",80,-3.2,3.2)
-            
+    h_nocut['pt']         = ROOT.TH1F("pt", "p_{T} [GeV]", 100, 0.0, 100.0)
+    h_nocut['PID']        = ROOT.TH1F("PID","Particle ID",50,-25,25)
+    h_nocut['Status']     = ROOT.TH1F("Status","Particle status", 6, -3., 3.)
+    h_nocut['Nparticles'] = ROOT.TH1F("Nparticles","Number of particles", 25, 0., 25.); 
+    h_nocut['ProcessID']  = ROOT.TH1F("ProcessID", "Process ID", 25, 0., 25.);
+    h_nocut['Weight']     = ROOT.TH1F("Weight", "Event weight", 100, 0., 0.01);
+    h_nocut['CouplingQED']= ROOT.TH1F("CouplingQED", "QED coupling", 100, 0., 0.1);
+    h_nocut['CouplingQCD']= ROOT.TH1F("CouplingQCD", "QCD coupling", 100, 0., 0.1);
+
+    # Gen e
+    h_nocut['e_pt']   = ROOT.TH1F("e_pt",  "e p_{T} [GeV]",100,0,200)
+    h_nocut['e_eta']  = ROOT.TH1F("e_eta", "e #eta",100,-5,5)
+    h_nocut['e_phi']  = ROOT.TH1F("e_phi", "e #phi",80,-3.2,3.2)
+    h_nocut['e_m']    = ROOT.TH1F("e_m",   "e mass [GeV]",50,150,200)
+    h_nocut['e_spin'] = ROOT.TH1F("e_spin","e spin [GeV]",50,150,200)
+
+    # Gen h
+    h_nocut['h_pt']   = ROOT.TH1F("h_pt","h p_{T} [GeV]",100,0,200)
+    h_nocut['h_eta']  = ROOT.TH1F("h_eta","h #eta",100,-5,5)
+    h_nocut['h_phi']  = ROOT.TH1F("h_phi","h #phi",80,-3.2,3.2)
+    h_nocut['h_m']    = ROOT.TH1F("h_m","h mass [GeV]",50,150,200)
+    h_nocut['h_spin'] = ROOT.TH1F("h_spin","h spin [GeV]",50,150,200)
+
+    # Gen Z
+    h_nocut['Z_pt']   = ROOT.TH1F("Z_pt","Z p_{T} [GeV]",100,0,200)
+    h_nocut['Z_eta']  = ROOT.TH1F("Z_eta","Z #eta",100,-5,5)
+    h_nocut['Z_phi']  = ROOT.TH1F("Z_phi","Z #phi",80,-3.2,3.2)
+    h_nocut['Z_m']    = ROOT.TH1F("Z_m","Z mass [GeV]",50,150,200)
+    h_nocut['Z_spin'] = ROOT.TH1F("Z_spin","Z spin [GeV]",50,150,200)
+
+    # Gen h from its b daughters
+    h_nocut['truerecoh_pt']  = ROOT.TH1F("truerecoh_pt", "Reco h (from daughters) p_{T} [GeV]",100,0,200)
+    h_nocut['truerecoh_eta'] = ROOT.TH1F("truerecoh_eta","Reco h (from daughters) #eta",100,-5,5)
+    h_nocut['truerecoh_phi'] = ROOT.TH1F("truerecoh_phi","Reco h (from daughters) #phi",80,-3.2,3.2)
+    h_nocut['truerecoh_m']   = ROOT.TH1F("truerecoh_m","Reco h (from daughters) mass [GeV]",50,150,200)
+
+    h_nocut['truerecoh_deltapt']  = ROOT.TH1F("truerecoh_deltapt", "Reco h (from daughters) #Delta p_{T} [GeV]",100,0,200)
+    h_nocut['truerecoh_deltaeta'] = ROOT.TH1F("truerecoh_deltaeta","Reco h (from daughters) #Delta #eta",100,-5,5)
+    h_nocut['truerecoh_deltaphi'] = ROOT.TH1F("truerecoh_deltaphi","Reco h (from daughters) #Delta #phi",80,-3.2,3.2)
+    h_nocut['truerecoh_deltam']   = ROOT.TH1F("truerecoh_deltam",  "Reco h (from daughters) #Delta mass [GeV]",50,150,200)
+    h_nocut['truerecoh_resm']     = ROOT.TH1F("truerecoh_resm",    "Reco h (from daughters) mass resolution [GeV]",100,-50,50)
+
+    
+    # Gen Z from its b daughters
+    h_nocut['truerecoZ_pt']  = ROOT.TH1F("truerecoZ_pt", "Reco Z (from daughters) p_{T} [GeV]",100,0,200)
+    h_nocut['truerecoZ_eta'] = ROOT.TH1F("truerecoZ_eta","Reco Z (from daughters) #eta",100,-5,5)
+    h_nocut['truerecoZ_phi'] = ROOT.TH1F("truerecoZ_phi","Reco Z (from daughters) #phi",80,-3.2,3.2)
+    h_nocut['truerecoZ_m']   = ROOT.TH1F("truerecoZ_m",  "Reco Z (from daughters) mass [GeV]",50,150,200)
+
+    h_nocut['truerecoZ_deltapt']  = ROOT.TH1F("truerecoZ_deltapt", "Reco Z (from daughters) #Delta p_{T} [GeV]",100,0,200)
+    h_nocut['truerecoZ_deltaeta'] = ROOT.TH1F("truerecoZ_deltaeta","Reco Z (from daughters) #Delta #eta",100,-5,5)
+    h_nocut['truerecoZ_deltaphi'] = ROOT.TH1F("truerecoZ_deltaphi","Reco Z (from daughters) #Delta #phi",80,-3.2,3.2)
+    h_nocut['truerecoZ_deltam']   = ROOT.TH1F("truerecoZ_deltam",  "Reco Z (from daughters) #Delta mass [GeV]",50,150,200)
+    h_nocut['truerecoZ_resm']     = ROOT.TH1F("truerecoZ_resm",    "Reco Z (from daughters) mass resolution [GeV]",100,-50,50)
+
+    # Reco h from chosen bs
+    h_nocut['recoh_pt']  = ROOT.TH1F("recoh_pt", "Reco h (from assignment) p_{T} [GeV]",100,0,200)
+    h_nocut['recoh_eta'] = ROOT.TH1F("recoh_eta","Reco h (from assignment) #eta",100,-5,5)
+    h_nocut['recoh_phi'] = ROOT.TH1F("recoh_phi","Reco h (from assignment) #phi",80,-3.2,3.2)
+    h_nocut['recoh_m']   = ROOT.TH1F("recoh_m",  "Reco h (from assignment) mass [GeV]",50,150,200)
+
+    h_nocut['recoh_deltapt']  = ROOT.TH1F("recoh_deltapt", "Reco h (from assignment) #Delta p_{T} [GeV]",100,0,200)
+    h_nocut['recoh_deltaeta'] = ROOT.TH1F("recoh_deltaeta","Reco h (from assignment) #Delta #eta",100,-5,5)
+    h_nocut['recoh_deltaphi'] = ROOT.TH1F("recoh_deltaphi","Reco h (from assignment) #Delta #phi",80,-3.2,3.2)
+    h_nocut['recoh_deltam']   = ROOT.TH1F("recoh_deltam",  "Reco h (from assignment) #Delta mass [GeV]",50,150,200)
+    h_nocut['recoh_resm']     = ROOT.TH1F("recoh_resm",    "Reco h (from assignment) mass resolution [GeV]",100,-50,50)
+    
+    # Reco Z from chosen bs
+    h_nocut['recoZ_pt']  = ROOT.TH1F("recoZ_pt", "Reco Z (from assignment) p_{T} [GeV]",100,0,200)
+    h_nocut['recoZ_eta'] = ROOT.TH1F("recoZ_eta","Reco Z (from assignment) #eta",100,-5,5)
+    h_nocut['recoZ_phi'] = ROOT.TH1F("recoZ_phi","Reco Z (from assignment) #phi",80,-3.2,3.2)
+    h_nocut['recoZ_m']   = ROOT.TH1F("recoZ_m",  "Reco Z (from assignment) mass [GeV]",50,150,200)
+
+    h_nocut['recoZ_deltapt']  = ROOT.TH1F("recoZ_deltapt", "Reco Z (from assignment) #Delta p_{T} [GeV]",100,0,200)
+    h_nocut['recoZ_deltaeta'] = ROOT.TH1F("recoZ_deltaeta","Reco Z (from assignment) #Delta #eta",100,-5,5)
+    h_nocut['recoZ_deltaphi'] = ROOT.TH1F("recoZ_deltaphi","Reco Z (from assignment) #Delta #phi",80,-3.2,3.2)
+    h_nocut['recoZ_deltam']   = ROOT.TH1F("recoZ_deltam",  "Reco Z (from assignment) #Delta mass [GeV]",50,150,200)
+    h_nocut['recoZ_resm']     = ROOT.TH1F("recoZ_resm",    "Reco Z (from assignment) mass resolution [GeV]",100,-50,50)
+    
+    h_nocut['inclusive_b_m']   = ROOT.TH1F("inclusive_b_m",  "Inclusive b mass [GeV]",50,0,10)
+    h_nocut['inclusive_b_pt']  = ROOT.TH1F("inclusive_b_pt", "Inclusive b p_{T} [GeV]",100,0,200)
+    h_nocut['inclusive_b_eta'] = ROOT.TH1F("inclusive_b_eta","Inclusive b #eta",100,-5,5)
+    h_nocut['inclusive_b_phi'] = ROOT.TH1F("inclusive_b_phi","Inclusive b #phi",80,-3.2,3.2)
+
+    
     for key in h_nocut.keys():
         h_cut[key] = h_nocut[key].Clone(h_nocut[key].GetName())
         h_cut[key].Sumw2()
@@ -150,26 +206,28 @@ if __name__ == '__main__':
             if maxEntries!=-1 and maxEntries < entry:
                 print cTerm.GREEN+"This sample has a maximum number of entries to process. Stop now."+cTerm.END
                 break
-        # Check ttbar production mechanism
-        ttbarMech = 0
-        if Particles[0].PID == 21 and Particles[1].PID == 21: ttbarMech = 1
-        elif Particles[0].PID == 21 and Particles[1].PID != 21: ttbarMech = 2
-        elif Particles[0].PID != 21 and Particles[1].PID == 21: ttbarMech = 2
-        else: ttbarMech = 3
-        h_nocut['ttbar_prod'].Fill( ttbarMech )
+        ## Check ttbar production mechanism
+        #ttbarMech = 0
+        #if Particles[0].PID == 21 and Particles[1].PID == 21: ttbarMech = 1
+        #elif Particles[0].PID == 21 and Particles[1].PID != 21: ttbarMech = 2
+        #elif Particles[0].PID != 21 and Particles[1].PID == 21: ttbarMech = 2
+        #else: ttbarMech = 3
+        #h_nocut['ttbar_prod'].Fill( ttbarMech )
         
         # TRootLHEFParticle
         index = 0
-        p4Electron = ROOT.TLorentzVector()
-        p4Muon = ROOT.TLorentzVector()
-        p4Photon = ROOT.TLorentzVector()
-        p4Lepton = ROOT.TLorentzVector()
-        p4Nu = ROOT.TLorentzVector()
-        
-        numElectrons = 0
-        numMuons = 0
-        numTaus = 0
-        numPhotons =0
+        p4_e = ROOT.TLorentzVector()
+        p4_h = ROOT.TLorentzVector()
+        p4_z = ROOT.TLorentzVector()
+        p4_truerecoh = ROOT.TLorentzVector()
+        p4_truerecoZ = ROOT.TLorentzVector()
+        p4_recoh = ROOT.TLorentzVector()
+        p4_recoZ = ROOT.TLorentzVector()
+
+        num_e = 0
+        num_h = 0
+        num_Z = 0
+        num_b = 0
         
         for p in Particles:
             index += 1
@@ -177,59 +235,85 @@ if __name__ == '__main__':
             h_nocut['PID'].Fill( p.PID )
             
             # MG Status code: -1 initial, 2 intermediate, 1 final
-            
-            # Electrons
-            if math.fabs(p.PID) == 11 and p.Status == 1:
-                if numElectrons == 0:
-                    p4Electron.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
-                    p4Lepton.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
-                numElectrons += 1
-            # Muons
-            if math.fabs(p.PID) == 13 and p.Status == 1:
-                if numMuons == 0:
-                    p4Muon.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
-                    p4Lepton.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
-                numMuons += 1
-            # Taus
-            if math.fabs(p.PID) == 15 and p.Status == 1:
-                #p4Muon.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
-                numTaus += 1
-            # Photons
-            if p.PID == 22 and p.Status == 1:
-                if numPhotons==0:
-                    p4Photon.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
-                numPhotons += 1
-                motherIndex = p.Mother1 - 1
-                pMom = Particles[motherIndex]
-                h_nocut['photon_mom'].Fill( pMom.PID )
-            # top
-            if math.fabs(p.PID) == 6:
-                h_nocut['top_m'].Fill( p.M )
-                h_nocut['top_pt'].Fill( p.PT )
-                h_nocut['top_eta'].Fill( p.Eta )
-                h_nocut['top_phi'].Fill( p.Phi )
-            # W
-            if math.fabs(p.PID) == 24:
-                h_nocut['W_m'].Fill( p.M )
-            # b quark
-            if math.fabs(p.PID) == 5:
-                h_nocut['b_m'].Fill( p.M )
-                h_nocut['b_pt'].Fill( p.PT )
-                h_nocut['b_eta'].Fill( p.Eta )
-                h_nocut['b_phi'].Fill( p.Phi )
-            # light quarks
-            if math.fabs(p.PID) > 0 and math.fabs(p.PID) < 5:
-                h_nocut['q_pt'].Fill( p.PT )
-                h_nocut['q_eta'].Fill( p.Eta )
-                h_nocut['q_phi'].Fill( p.Phi )
-            # neutrino
-            if (math.fabs(p.PID) == 12 or math.fabs(p.PID) == 14) and p.Status == 1:
-                p4Nu.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E )
-                                
-            # test histogram
-            h_nocut['pt'].Fill( p.PT )
-            #print p.PT
+
+            # Initial state electrons
+            if math.fabs(p.PID) == 11 and p.Status == -1:
+                h_nocut['e_pt'].Fill( p.PT )
+                h_nocut['e_eta'].Fill( p.Eta )
+                h_nocut['e_phi'].Fill( p.Phi )
+                h_nocut['e_m'].Fill( p.M )
+                h_nocut['e_spin'].Fill( p.Spin )
+                num_e += 1
+                
+            # Intermediate state h
+            if math.fabs(p.PID) == 25 and p.Status == 2:
+                p4_h.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
+                h_nocut['h_pt'].Fill( p.PT )
+                h_nocut['h_eta'].Fill( p.Eta )
+                h_nocut['h_phi'].Fill( p.Phi )
+                h_nocut['h_m'].Fill( p.M )
+                h_nocut['h_spin'].Fill( p.Spin )
+                num_h += 1
+            # Intermediate state Z
+            if math.fabs(p.PID) == 23 and p.Status == 2:
+                p4_Z.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
+                h_nocut['Z_pt'].Fill( p.PT )
+                h_nocut['Z_eta'].Fill( p.Eta )
+                h_nocut['Z_phi'].Fill( p.Phi )
+                h_nocut['Z_m'].Fill( p.M )
+                h_nocut['Z_spin'].Fill( p.Spin )
+                num_Z += 1
+            # Final state b
+            if math.fabs(p.PID) == 5 and p.Status == 2:
+                h_nocut['inclusive_b_pt'].Fill( p.PT )
+                h_nocut['inclusive_b_eta'].Fill( p.Eta )
+                h_nocut['inclusive_b_phi'].Fill( p.Phi )
+                h_nocut['inclusive_b_m'].Fill( p.M )
+
+                # Build true h from b daughters
+                if p.Mother1 != -1:
+                    if math.fabs(Particles[p.Mother1].PID) == 25:
+                        p4temp = ROOT.TLorentzVector()
+                        p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
+                        p4_truerecoh += p4temp
+
+                # Build true Z from b daughters
+                if p.Mother1 != -1:
+                    if math.fabs(Particles[p.Mother1].PID) == 23:
+                        p4temp = ROOT.TLorentzVector()
+                        p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
+                        p4_truerecoZ += p4temp
+
+                  
+        
         # end loop over Particles
+
+        # Fill true h from daughters histos
+        h_nocut['truerecoh_pt'].Fill(  p4_truerecoh.Pt() )
+        h_nocut['truerecoh_eta'].Fill( p4_truerecoh.Eta() )
+        h_nocut['truerecoh_phi'].Fill( p4_truerecoh.Phi() )
+        h_nocut['truerecoh_m'].Fill(   p4_truerecoh.M() )
+
+        # Fill true Z from daughters histos
+        h_nocut['truerecoZ_pt'].Fill(  p4_truerecoZ.Pt() )
+        h_nocut['truerecoZ_eta'].Fill( p4_truerecoZ.Eta() )
+        h_nocut['truerecoZ_phi'].Fill( p4_truerecoZ.Phi() )
+        h_nocut['truerecoZ_m'].Fill(   p4_truerecoZ.M() )
+
+        # Fill deltas between true h from daughters and gen h
+        h_nocut['truerecoh_deltapt'].Fill(  p4_truerecoh.Pt()  - p4_h.Pt() )
+        h_nocut['truerecoh_deltaeta'].Fill( p4_truerecoh.Eta() - p4_h.Eta())
+        h_nocut['truerecoh_deltaphi'].Fill( p4_truerecoh.Phi() - p4_h.Phi())
+        h_nocut['truerecoh_deltam'].Fill(   p4_truerecoh.M()   - p4_h.M()  )
+        h_nocut['truerecoh_resm'].Fill(  ( p4_truerecoh.M()   - p4_h.M()) / p4_h.M()  )
+
+        # Fill deltas between true Z from daughters and gen Z
+        h_nocut['truerecoZ_deltapt'].Fill(  p4_truerecoZ.Pt()  - p4_Z.Pt() )
+        h_nocut['truerecoZ_deltaeta'].Fill( p4_truerecoZ.Eta() - p4_Z.Eta())
+        h_nocut['truerecoZ_deltaphi'].Fill( p4_truerecoZ.Phi() - p4_Z.Phi())
+        h_nocut['truerecoZ_deltam'].Fill(   p4_truerecoZ.M()   - p4_Z.M()  )
+        h_nocut['truerecoZ_resm'].Fill(   ( p4_truerecoZ.M()   - p4_Z.M()) / p4_Z.M()  )
+        
 
         # Check BR
         BR_code = 0
@@ -254,27 +338,9 @@ if __name__ == '__main__':
             # tau+jets
             BR_code = 4
 
-        h_nocut['ttbar_BR'].Fill( BR_code )
 
-        h_nocut['N_photons'].Fill(numPhotons)
-        if numPhotons > 0 and (BR_code == 2 or BR_code == 3):
-            h_nocut['photon_pt'].Fill(p4Photon.Pt())
-            h_nocut['photon_eta'].Fill(p4Photon.Eta())
-            h_nocut['photon_phi'].Fill(p4Photon.Phi())
-            # DeltaR
-            deltaRwLep = p4Photon.DeltaR( p4Lepton )
-            h_nocut['photon_deltaRLep'].Fill( deltaRwLep )
-
-            h_nocut['lep_pt'].Fill( p4Lepton.Pt() )
-            h_nocut['lep_eta'].Fill( p4Lepton.Eta() )
-            h_nocut['lep_phi'].Fill( p4Lepton.Phi() )
-
-            h_nocut['nu_pt'].Fill( p.PT )
-            h_nocut['nu_eta'].Fill( p.Eta )
-            h_nocut['nu_phi'].Fill( p.Phi )
             
     # END loop over entries
-    h_nocut['pt'].Draw()
 
     outFile.cd()
     for key in h_nocut.keys():
