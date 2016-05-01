@@ -2,11 +2,11 @@
 
 for i in `find ../Rui_ilc/ -maxdepth 2 -type d -name 'run_*' | grep Events`
     do
-        python GenAnalysis.py -i ${i}
+        python GenAnalysis.py -b -i ${i}
     done
 
 for i in `find ../Rui_cepc/ -maxdepth 2 -type d -name 'run_*' | grep Events`
     do
-        python GenAnalysis.py -i ${i}
+        python GenAnalysis.py -b -i ${i}
     done
 exit 0
