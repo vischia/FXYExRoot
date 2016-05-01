@@ -5,6 +5,9 @@
    
    Francisco Yumiceva (yumiceva@gmail.com)
    Florida Institute of Technology, 2013  
+
+   Modified by Pietro Vischia (pietro.vischia@gmail.com) for hZ analysis in 2HDM with Rui Santos
+
 """
 
 class cTerm:
@@ -54,6 +57,7 @@ def main(argv = None):
     parser.add_option("-s", "--sample",
                       default="madgraph",
                       help="input samples. The options are: madgraph or whizard [default: %default]")
+    parser.add_option("-i", "--inputDir", default="", help="Input directory")
     parser.add_option("-q","--quit",
                       action="store_true",
                       help="quit after reading tree otherwise prompt for keyboard to continue.")
@@ -71,18 +75,11 @@ if __name__ == '__main__':
         print cTerm.GREEN+"Run in batch mode."+cTerm.END
     
     # Load ROOT libraries
-    ROOT.gSystem.Load('/uscms/home/yumiceva/work/sframe/CMSSW_5_3_3/src/ExRootAnalysis/lib/libExRootAnalysis.so')
+    ROOT.gSystem.Load('/home/junzi/workarea/production/Production/MG5_aMC_v2_3_3/ExRootAnalysis/libExRootAnalysis.so')
 
     # Create output root file
-    outname = "results_gen.root"
-    if options.sample == "madgraph":
-        outname = "results_gen_madgraph.root"
-    elif options.sample == "whizard":
-        outname= "results_gen_whizard.root"
-    else:
-        print cTerm.RED+"Unknown sample name: "+options.sample+"\nOptions are \"madgraph\" or \"whizard\""+cTerm.RED
-        sys.exit()
-        
+    outname = '{outDir}/results_anal.root'.format(outDir=options.inputDir)
+    
     outFile = ROOT.TFile(outname,"RECREATE")
     
     # Create chain of root trees
@@ -90,18 +87,9 @@ if __name__ == '__main__':
     maxEntries = -1
     # MG files
     print "Use dataset: "+options.sample
-    
-    if options.sample == "madgraph":
-        chain.Add("/uscms_data/d2/maravin/TTG_MG5/Two2Seven/ROOT/ttgamma_27_part1.root")
-        chain.Add("/uscms_data/d2/maravin/TTG_MG5/Two2Seven/ROOT/ttgamma_27_part2.root")
-    ##chain.Add("/uscms_data/d2/maravin/TTG_MG5/Two2Seven/ROOT/ttgamma_27_part3.root")
-    ##chain.Add("/uscms_data/d2/maravin/TTG_MG5/Two2Seven/ROOT/ttgamma_27_part4.root")
 
-    # Whizard files
-    if options.sample == "whizard":
-        chain.Add("/uscmst1b_scratch/lpc1/cmsroc/yumiceva/TTGamma/LHE/whizard/TTGamma_Whizard_2to7/ttgamma.root")
-        maxEntries = 200000
-        
+    chain.Add('{inputDir}/unweighted_events.root'.format(inputDir=options.inputDir))
+    
     # setup ntuple object
     treeReader = ROOT.ExRootTreeReader(chain)
     # number of entries
