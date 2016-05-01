@@ -99,13 +99,21 @@ if __name__ == '__main__':
     # Get pointers to branches used in this analysis
     Particles = treeReader.UseBranch("Particle")
 
+    Nparticles  = treeReader.UseBranch("Nparticles")
+    ProcessID   = treeReader.UseBranch("ProcessID")
+    Weight      = treeReader.UseBranch("Weight")
+    CouplingQED = treeReader.UseBranch("CouplingQED")
+    CouplingQCD = treeReader.UseBranch("CouplingQCD")
+    
+
+
+    
     # Book histograms
     h_nocut = {}
     h_cut = {}
-    h_nocut['pt']         = ROOT.TH1F("pt", "p_{T} [GeV]", 100, 0.0, 100.0)
     h_nocut['PID']        = ROOT.TH1F("PID","Particle ID",50,-25,25)
     h_nocut['Status']     = ROOT.TH1F("Status","Particle status", 6, -3., 3.)
-    h_nocut['Nparticles'] = ROOT.TH1F("Nparticles","Number of particles", 25, 0., 25.); 
+    h_nocut['Nparticles'] = ROOT.TH1F("Nparticles","Number of particles", 26, -1., 25.); 
     h_nocut['ProcessID']  = ROOT.TH1F("ProcessID", "Process ID", 25, 0., 25.);
     h_nocut['Weight']     = ROOT.TH1F("Weight", "Event weight", 100, 0., 0.01);
     h_nocut['CouplingQED']= ROOT.TH1F("CouplingQED", "QED coupling", 100, 0., 0.1);
@@ -218,7 +226,7 @@ if __name__ == '__main__':
         index = 0
         p4_e = ROOT.TLorentzVector()
         p4_h = ROOT.TLorentzVector()
-        p4_z = ROOT.TLorentzVector()
+        p4_Z = ROOT.TLorentzVector()
         p4_truerecoh = ROOT.TLorentzVector()
         p4_truerecoZ = ROOT.TLorentzVector()
         p4_recoh = ROOT.TLorentzVector()
@@ -233,7 +241,7 @@ if __name__ == '__main__':
             index += 1
             
             h_nocut['PID'].Fill( p.PID )
-            
+            h_nocut['Status'].Fill( p.Status )
             # MG Status code: -1 initial, 2 intermediate, 1 final
 
             # Initial state electrons
@@ -288,6 +296,17 @@ if __name__ == '__main__':
         
         # end loop over Particles
 
+        if( Nparticles == index+1 ):
+            h_nocut['Nparticles'].Fill( Nparticles )
+        else:
+            h_nocut['Nparticles'].Fill( -1. )
+
+        h_nocut['ProcessID'].Fill(   ProcessID  )
+        h_nocut['Weight'].Fill(      Weight     )
+        h_nocut['CouplingQED'].Fill( CouplingQED)
+        h_nocut['CouplingQCD'].Fill( CouplingQCD)
+
+        
         # Fill true h from daughters histos
         h_nocut['truerecoh_pt'].Fill(  p4_truerecoh.Pt() )
         h_nocut['truerecoh_eta'].Fill( p4_truerecoh.Eta() )
@@ -305,14 +324,16 @@ if __name__ == '__main__':
         h_nocut['truerecoh_deltaeta'].Fill( p4_truerecoh.Eta() - p4_h.Eta())
         h_nocut['truerecoh_deltaphi'].Fill( p4_truerecoh.Phi() - p4_h.Phi())
         h_nocut['truerecoh_deltam'].Fill(   p4_truerecoh.M()   - p4_h.M()  )
-        h_nocut['truerecoh_resm'].Fill(  ( p4_truerecoh.M()   - p4_h.M()) / p4_h.M()  )
+        if p4_h.M() != 0:
+            h_nocut['truerecoh_resm'].Fill(  ( p4_truerecoh.M()   - p4_h.M()) / p4_h.M()  )
 
         # Fill deltas between true Z from daughters and gen Z
         h_nocut['truerecoZ_deltapt'].Fill(  p4_truerecoZ.Pt()  - p4_Z.Pt() )
         h_nocut['truerecoZ_deltaeta'].Fill( p4_truerecoZ.Eta() - p4_Z.Eta())
         h_nocut['truerecoZ_deltaphi'].Fill( p4_truerecoZ.Phi() - p4_Z.Phi())
         h_nocut['truerecoZ_deltam'].Fill(   p4_truerecoZ.M()   - p4_Z.M()  )
-        h_nocut['truerecoZ_resm'].Fill(   ( p4_truerecoZ.M()   - p4_Z.M()) / p4_Z.M()  )
+        if p4_Z.M() != 0:
+            h_nocut['truerecoZ_resm'].Fill(   ( p4_truerecoZ.M()   - p4_Z.M()) / p4_Z.M()  )
         
 
         # Check BR
