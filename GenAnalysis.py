@@ -121,7 +121,7 @@ if __name__ == '__main__':
     h_nocut['Nparticles'] = ROOT.TH1F("Nparticles","Number of particles", 26, -1., 25.); 
     h_nocut['Event_size'] = ROOT.TH1F("Event_size", "Event size", 20, 0., 20.);
     h_nocut['ProcessID']  = ROOT.TH1F("ProcessID", "Process ID", 25, 0., 25.);
-    h_nocut['Weight']     = ROOT.TH1F("Weight", "Event weight", 100, 0., 0.01);
+    h_nocut['Weight']     = ROOT.TH1F("Weight", "Event weight", 1000, 0., 0.01);
     h_nocut['CouplingQED']= ROOT.TH1F("CouplingQED", "QED coupling", 100, 0., 0.1);
     h_nocut['CouplingQCD']= ROOT.TH1F("CouplingQCD", "QCD coupling", 100, 0., 0.1);
 
@@ -136,71 +136,71 @@ if __name__ == '__main__':
     h_nocut['e_pt']   = ROOT.TH1F("e_pt",  "e p_{T} [GeV]",100,0,200)
     h_nocut['e_eta']  = ROOT.TH1F("e_eta", "e #eta",100,-5,5)
     h_nocut['e_phi']  = ROOT.TH1F("e_phi", "e #phi",80,-3.2,3.2)
-    h_nocut['e_m']    = ROOT.TH1F("e_m",   "e mass [GeV]",50,150,200)
-    h_nocut['e_spin'] = ROOT.TH1F("e_spin","e spin [GeV]",50,150,200)
+    h_nocut['e_m']    = ROOT.TH1F("e_m",   "e mass [GeV]",200,0.,200.)
+    h_nocut['e_spin'] = ROOT.TH1F("e_spin","e spin [GeV]",6,-3.,3.)
 
     # Gen h
     h_nocut['h_pt']   = ROOT.TH1F("h_pt","h p_{T} [GeV]",100,0,200)
     h_nocut['h_eta']  = ROOT.TH1F("h_eta","h #eta",100,-5,5)
     h_nocut['h_phi']  = ROOT.TH1F("h_phi","h #phi",80,-3.2,3.2)
-    h_nocut['h_m']    = ROOT.TH1F("h_m","h mass [GeV]",50,150,200)
-    h_nocut['h_spin'] = ROOT.TH1F("h_spin","h spin [GeV]",50,150,200)
+    h_nocut['h_m']    = ROOT.TH1F("h_m","h mass [GeV]",200,0.,200)
+    h_nocut['h_spin'] = ROOT.TH1F("h_spin","h spin [GeV]",6,-3.,3.)
 
     # Gen Z
     h_nocut['Z_pt']   = ROOT.TH1F("Z_pt","Z p_{T} [GeV]",100,0,200)
     h_nocut['Z_eta']  = ROOT.TH1F("Z_eta","Z #eta",100,-5,5)
     h_nocut['Z_phi']  = ROOT.TH1F("Z_phi","Z #phi",80,-3.2,3.2)
-    h_nocut['Z_m']    = ROOT.TH1F("Z_m","Z mass [GeV]",50,150,200)
-    h_nocut['Z_spin'] = ROOT.TH1F("Z_spin","Z spin [GeV]",50,150,200)
+    h_nocut['Z_m']    = ROOT.TH1F("Z_m","Z mass [GeV]",200,0.,200)
+    h_nocut['Z_spin'] = ROOT.TH1F("Z_spin","Z spin [GeV]",6,-3.,3.)
 
     # Gen h from its b daughters
     h_nocut['truerecoh_pt']  = ROOT.TH1F("truerecoh_pt", "Reco h (from daughters) p_{T} [GeV]",100,0,200)
     h_nocut['truerecoh_eta'] = ROOT.TH1F("truerecoh_eta","Reco h (from daughters) #eta",100,-5,5)
     h_nocut['truerecoh_phi'] = ROOT.TH1F("truerecoh_phi","Reco h (from daughters) #phi",80,-3.2,3.2)
-    h_nocut['truerecoh_m']   = ROOT.TH1F("truerecoh_m","Reco h (from daughters) mass [GeV]",50,150,200)
+    h_nocut['truerecoh_m']   = ROOT.TH1F("truerecoh_m","Reco h (from daughters) mass [GeV]",200,0.,200)
 
     h_nocut['truerecoh_deltapt']  = ROOT.TH1F("truerecoh_deltapt", "Reco h (from daughters) #Delta p_{T} [GeV]",100,0,200)
     h_nocut['truerecoh_deltaeta'] = ROOT.TH1F("truerecoh_deltaeta","Reco h (from daughters) #Delta #eta",100,-5,5)
     h_nocut['truerecoh_deltaphi'] = ROOT.TH1F("truerecoh_deltaphi","Reco h (from daughters) #Delta #phi",80,-3.2,3.2)
-    h_nocut['truerecoh_deltam']   = ROOT.TH1F("truerecoh_deltam",  "Reco h (from daughters) #Delta mass [GeV]",50,150,200)
-    h_nocut['truerecoh_resm']     = ROOT.TH1F("truerecoh_resm",    "Reco h (from daughters) mass resolution [GeV]",100,-50,50)
+    h_nocut['truerecoh_deltam']   = ROOT.TH1F("truerecoh_deltam",  "Reco h (from daughters) #Delta mass [GeV]",200,0.,200)
+    h_nocut['truerecoh_resm']     = ROOT.TH1F("truerecoh_resm",    "Reco h (from daughters) mass resolution [GeV]",100,-10,10)
 
     
     # Gen Z from its b daughters
     h_nocut['truerecoZ_pt']  = ROOT.TH1F("truerecoZ_pt", "Reco Z (from daughters) p_{T} [GeV]",100,0,200)
     h_nocut['truerecoZ_eta'] = ROOT.TH1F("truerecoZ_eta","Reco Z (from daughters) #eta",100,-5,5)
     h_nocut['truerecoZ_phi'] = ROOT.TH1F("truerecoZ_phi","Reco Z (from daughters) #phi",80,-3.2,3.2)
-    h_nocut['truerecoZ_m']   = ROOT.TH1F("truerecoZ_m",  "Reco Z (from daughters) mass [GeV]",50,150,200)
+    h_nocut['truerecoZ_m']   = ROOT.TH1F("truerecoZ_m",  "Reco Z (from daughters) mass [GeV]",200,0.,200)
 
     h_nocut['truerecoZ_deltapt']  = ROOT.TH1F("truerecoZ_deltapt", "Reco Z (from daughters) #Delta p_{T} [GeV]",100,0,200)
     h_nocut['truerecoZ_deltaeta'] = ROOT.TH1F("truerecoZ_deltaeta","Reco Z (from daughters) #Delta #eta",100,-5,5)
     h_nocut['truerecoZ_deltaphi'] = ROOT.TH1F("truerecoZ_deltaphi","Reco Z (from daughters) #Delta #phi",80,-3.2,3.2)
-    h_nocut['truerecoZ_deltam']   = ROOT.TH1F("truerecoZ_deltam",  "Reco Z (from daughters) #Delta mass [GeV]",50,150,200)
-    h_nocut['truerecoZ_resm']     = ROOT.TH1F("truerecoZ_resm",    "Reco Z (from daughters) mass resolution [GeV]",100,-50,50)
+    h_nocut['truerecoZ_deltam']   = ROOT.TH1F("truerecoZ_deltam",  "Reco Z (from daughters) #Delta mass [GeV]",200,0.,200)
+    h_nocut['truerecoZ_resm']     = ROOT.TH1F("truerecoZ_resm",    "Reco Z (from daughters) mass resolution [GeV]",100,-10,10)
 
     # Reco h from chosen bs
     h_nocut['recoh_pt']  = ROOT.TH1F("recoh_pt", "Reco h (from assignment) p_{T} [GeV]",100,0,200)
     h_nocut['recoh_eta'] = ROOT.TH1F("recoh_eta","Reco h (from assignment) #eta",100,-5,5)
     h_nocut['recoh_phi'] = ROOT.TH1F("recoh_phi","Reco h (from assignment) #phi",80,-3.2,3.2)
-    h_nocut['recoh_m']   = ROOT.TH1F("recoh_m",  "Reco h (from assignment) mass [GeV]",50,150,200)
+    h_nocut['recoh_m']   = ROOT.TH1F("recoh_m",  "Reco h (from assignment) mass [GeV]",200,0.,200)
 
     h_nocut['recoh_deltapt']  = ROOT.TH1F("recoh_deltapt", "Reco h (from assignment) #Delta p_{T} [GeV]",100,0,200)
     h_nocut['recoh_deltaeta'] = ROOT.TH1F("recoh_deltaeta","Reco h (from assignment) #Delta #eta",100,-5,5)
     h_nocut['recoh_deltaphi'] = ROOT.TH1F("recoh_deltaphi","Reco h (from assignment) #Delta #phi",80,-3.2,3.2)
-    h_nocut['recoh_deltam']   = ROOT.TH1F("recoh_deltam",  "Reco h (from assignment) #Delta mass [GeV]",50,150,200)
-    h_nocut['recoh_resm']     = ROOT.TH1F("recoh_resm",    "Reco h (from assignment) mass resolution [GeV]",100,-50,50)
+    h_nocut['recoh_deltam']   = ROOT.TH1F("recoh_deltam",  "Reco h (from assignment) #Delta mass [GeV]",200,0.,200)
+    h_nocut['recoh_resm']     = ROOT.TH1F("recoh_resm",    "Reco h (from assignment) mass resolution [GeV]",100,-10,10)
     
     # Reco Z from chosen bs
     h_nocut['recoZ_pt']  = ROOT.TH1F("recoZ_pt", "Reco Z (from assignment) p_{T} [GeV]",100,0,200)
     h_nocut['recoZ_eta'] = ROOT.TH1F("recoZ_eta","Reco Z (from assignment) #eta",100,-5,5)
     h_nocut['recoZ_phi'] = ROOT.TH1F("recoZ_phi","Reco Z (from assignment) #phi",80,-3.2,3.2)
-    h_nocut['recoZ_m']   = ROOT.TH1F("recoZ_m",  "Reco Z (from assignment) mass [GeV]",50,150,200)
+    h_nocut['recoZ_m']   = ROOT.TH1F("recoZ_m",  "Reco Z (from assignment) mass [GeV]",200,0.,200)
 
     h_nocut['recoZ_deltapt']  = ROOT.TH1F("recoZ_deltapt", "Reco Z (from assignment) #Delta p_{T} [GeV]",100,0,200)
     h_nocut['recoZ_deltaeta'] = ROOT.TH1F("recoZ_deltaeta","Reco Z (from assignment) #Delta #eta",100,-5,5)
     h_nocut['recoZ_deltaphi'] = ROOT.TH1F("recoZ_deltaphi","Reco Z (from assignment) #Delta #phi",80,-3.2,3.2)
-    h_nocut['recoZ_deltam']   = ROOT.TH1F("recoZ_deltam",  "Reco Z (from assignment) #Delta mass [GeV]",50,150,200)
-    h_nocut['recoZ_resm']     = ROOT.TH1F("recoZ_resm",    "Reco Z (from assignment) mass resolution [GeV]",100,-50,50)
+    h_nocut['recoZ_deltam']   = ROOT.TH1F("recoZ_deltam",  "Reco Z (from assignment) #Delta mass [GeV]",200,0.,200)
+    h_nocut['recoZ_resm']     = ROOT.TH1F("recoZ_resm",    "Reco Z (from assignment) mass resolution [GeV]",100,-10,10)
     
     h_nocut['inclusive_b_m']   = ROOT.TH1F("inclusive_b_m",  "Inclusive b mass [GeV]",50,0,10)
     h_nocut['inclusive_b_pt']  = ROOT.TH1F("inclusive_b_pt", "Inclusive b p_{T} [GeV]",100,0,200)
@@ -254,7 +254,7 @@ if __name__ == '__main__':
         
         for iev in Event:
             h_nocut['Event_size'].Fill(1)
-            h_nocut['Nparticles'].Fill(  iev.Nparticles )
+            #h_nocut['Nparticles'].Fill(  iev.Nparticles ) # See below, after event loop
             h_nocut['ProcessID'].Fill(   iev.ProcessID  )
             h_nocut['Weight'].Fill(      iev.Weight     )
             h_nocut['CouplingQED'].Fill( iev.CouplingQED )
@@ -322,6 +322,14 @@ if __name__ == '__main__':
                   
         
         # end loop over Particles
+
+
+        for iev in Event:
+            if iev.Nparticles != index:
+                h_nocut['Nparticles'].Fill(  -1 )
+            else:
+                h_nocut['Nparticles'].Fill(iev.Nparticles)
+                
         h_nocut['num_e'].Fill(num_e)
         h_nocut['num_h'].Fill(num_h)
         h_nocut['num_Z'].Fill(num_Z)
