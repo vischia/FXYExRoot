@@ -85,7 +85,10 @@ if __name__ == '__main__':
              #'Nparticles', 'ProcessID', 'Weight', 'CouplingQED', 'CouplingQCD',
              'num_e', 'num_h', 'num_Z', 'num_b',
              'e_pt', 'e_eta', 'e_phi', 'e_m', 'e_spin', 'h_pt', 'h_eta', 'h_phi', 'h_m', 'h_spin', 'Z_pt', 'Z_eta', 'Z_phi', 'Z_m', 'Z_spin', 'truerecoh_pt', 'truerecoh_eta', 'truerecoh_phi', 'truerecoh_m', 'truerecoh_deltapt', 'truerecoh_deltaeta', 'truerecoh_deltaphi', 'truerecoh_deltam', 'truerecoh_resm', 'truerecoZ_pt', 'truerecoZ_eta', 'truerecoZ_phi', 'truerecoZ_m', 'truerecoZ_deltapt', 'truerecoZ_deltaeta', 'truerecoZ_deltaphi', 'truerecoZ_deltam', 'truerecoZ_resm', 'recoh_pt', 'recoh_eta', 'recoh_phi', 'recoh_m', 'recoh_deltapt', 'recoh_deltaeta', 'recoh_deltaphi', 'recoh_deltam', 'recoh_resm', 'recoZ_pt', 'recoZ_eta', 'recoZ_phi', 'recoZ_m', 'recoZ_deltapt', 'recoZ_deltaeta', 'recoZ_deltaphi', 'recoZ_deltam', 'recoZ_resm', 'inclusive_b_m', 'inclusive_b_pt', 'inclusive_b_eta', 'inclusive_b_phi',
-        'truerecoh_sumpt', 'truerecoZ_sumpt', 'recoZ_sumpt', 'recoh_sumpt'
+             'truerecoh_sumpt',
+             # 'truerecoZ_sumpt',
+             'recoZ_sumpt'
+             #, 'recoh_sumpt'
     ]
     
     os.system('mkdir -p {outputDir}'.format(outputDir=options.outputDir))
@@ -102,6 +105,8 @@ if __name__ == '__main__':
     
     for h in hList:
         h_plus = plus.Get(h)
+        if not h_plus:
+            continue
         print "Processing histogram ", h
         print type(h_plus)
         h_plus.SetName(h_plus.GetName()+'plus')
@@ -114,14 +119,42 @@ if __name__ == '__main__':
         h_plus.SetLineWidth(3)
         h_minus.SetLineWidth(3)
 
+        h_comp_plus = ROOT.TH1F()
+        h_comp_minus = ROOT.TH1F()
+                
+        if h_plus.GetName().find('truerecoh_sumpt') != -1:
+            h_comp_plus=plus.Get('truerecoZ_sumpt')
+            h_comp_plus.SetName(h_comp_plus.GetName()+'plus')
+            h_comp_minus=minus.Get('truerecoZ_sumpt')
+            h_comp_minus.SetName(h_comp_minus.GetName()+'minus')
+        elif h_plus.GetName().find('recoh_sumpt') != -1 and h_plus.GetName().find('truerecoh_sumpt') == -1:
+            h_comp_plus=plus.Get('recoZ_sumpt')
+            h_comp_plus.SetName(h_comp_plus.GetName()+'plus')
+            h_comp_minus=minus.Get('recoZ_sumpt')
+            h_comp_minus.SetName(h_comp_minus.GetName()+'minus')
+
+            
         c = ROOT.TCanvas("c", "c", 800,800)
         c.cd()
         h_plus.SetMaximum(2*h_plus.GetMaximum())
         h_plus.Draw("hist")
         h_minus.Draw("samehist")
+        if h_comp_plus.GetName().find('sumpt') != -1:
+            h_comp_plus.SetLineColor(1)
+            h_comp_minus.SetLineColor(2)
+            h_comp_plus.SetLineWidth(3)
+            h_comp_minus.SetLineWidth(3)
+            h_comp_plus.SetLineStyle(2)
+            h_comp_minus.SetLineStyle(2)
+            h_comp_plus.Draw("samehist")
+            h_comp_minus.Draw("samehist")
+
         c.Print('{outputDir}/{h}.png'.format(outputDir=options.outputDir,h=h))
         
 
+    
+        
+        
     print cTerm.GREEN+"Output file name: "+outname+cTerm.END
 
     if options.quit == False:
