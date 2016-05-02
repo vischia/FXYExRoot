@@ -99,14 +99,19 @@ if __name__ == '__main__':
     # Get pointers to branches used in this analysis
     Particles = treeReader.UseBranch("Particle")
 
-    Nparticles  = treeReader.UseBranch("Nparticles")
-    ProcessID   = treeReader.UseBranch("ProcessID")
-    Weight      = treeReader.UseBranch("Weight")
-    CouplingQED = treeReader.UseBranch("CouplingQED")
-    CouplingQCD = treeReader.UseBranch("CouplingQCD")
+    Event = treeReader.UseBranch("Event")
+
+    #Weight = treeReader.UseBranch("Event.Weight")
     
+    #Event_size = treeReader.UseBranch("Event_size")
+    #
+    #Nparticles  = treeReader.UseBranch('Event.Nparticles')
+    #ProcessID   = treeReader.UseBranch('Event.ProcessID')
+    #Weight      = treeReader.UseBranch('Event.Weight')
+    #CouplingQED = treeReader.UseBranch('Event.CouplingQED')
+    #CouplingQCD = treeReader.UseBranch('Event.CouplingQCD')
 
-
+    
     
     # Book histograms
     h_nocut = {}
@@ -114,11 +119,19 @@ if __name__ == '__main__':
     h_nocut['PID']        = ROOT.TH1F("PID","Particle ID",50,-25,25)
     h_nocut['Status']     = ROOT.TH1F("Status","Particle status", 6, -3., 3.)
     h_nocut['Nparticles'] = ROOT.TH1F("Nparticles","Number of particles", 26, -1., 25.); 
+    h_nocut['Event_size'] = ROOT.TH1F("Event_size", "Event size", 20, 0., 20.);
     h_nocut['ProcessID']  = ROOT.TH1F("ProcessID", "Process ID", 25, 0., 25.);
     h_nocut['Weight']     = ROOT.TH1F("Weight", "Event weight", 100, 0., 0.01);
     h_nocut['CouplingQED']= ROOT.TH1F("CouplingQED", "QED coupling", 100, 0., 0.1);
     h_nocut['CouplingQCD']= ROOT.TH1F("CouplingQCD", "QCD coupling", 100, 0., 0.1);
 
+    h_nocut['num_e']  = ROOT.TH1F("num_e", "Number of electrons", 5, 0., 5.);
+    h_nocut['num_h']  = ROOT.TH1F("num_h", "Number of h", 5, 0., 5.);
+    h_nocut['num_Z']  = ROOT.TH1F("num_Z", "Number of Z", 5, 0., 5.);
+    h_nocut['num_b']  = ROOT.TH1F("num_b", "Number of b", 5, 0., 5.);
+        
+
+    
     # Gen e
     h_nocut['e_pt']   = ROOT.TH1F("e_pt",  "e p_{T} [GeV]",100,0,200)
     h_nocut['e_eta']  = ROOT.TH1F("e_eta", "e #eta",100,-5,5)
@@ -236,48 +249,62 @@ if __name__ == '__main__':
         num_h = 0
         num_Z = 0
         num_b = 0
+
+        w=1
         
+        for iev in Event:
+            h_nocut['Event_size'].Fill(1)
+            h_nocut['Nparticles'].Fill(  iev.Nparticles )
+            h_nocut['ProcessID'].Fill(   iev.ProcessID  )
+            h_nocut['Weight'].Fill(      iev.Weight     )
+            h_nocut['CouplingQED'].Fill( iev.CouplingQED )
+            h_nocut['CouplingQCD'].Fill( iev.CouplingQCD )
+            w=iev.Weight
+
         for p in Particles:
             index += 1
             
-            h_nocut['PID'].Fill( p.PID )
-            h_nocut['Status'].Fill( p.Status )
+            h_nocut['PID'].Fill( p.PID, w )
+            h_nocut['Status'].Fill( p.Status, w )
             # MG Status code: -1 initial, 2 intermediate, 1 final
 
             # Initial state electrons
             if math.fabs(p.PID) == 11 and p.Status == -1:
-                h_nocut['e_pt'].Fill( p.PT )
-                h_nocut['e_eta'].Fill( p.Eta )
-                h_nocut['e_phi'].Fill( p.Phi )
-                h_nocut['e_m'].Fill( p.M )
-                h_nocut['e_spin'].Fill( p.Spin )
+                h_nocut['e_pt'].Fill( p.PT, w )
+                h_nocut['e_eta'].Fill( p.Eta, w )
+                h_nocut['e_phi'].Fill( p.Phi, w )
+                h_nocut['e_m'].Fill( p.M, w )
+                h_nocut['e_spin'].Fill( p.Spin, w )
                 num_e += 1
                 
             # Intermediate state h
-            if math.fabs(p.PID) == 25 and p.Status == 2:
+            if math.fabs(p.PID) == 25:
+                #and p.Status == 2:
                 p4_h.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
-                h_nocut['h_pt'].Fill( p.PT )
-                h_nocut['h_eta'].Fill( p.Eta )
-                h_nocut['h_phi'].Fill( p.Phi )
-                h_nocut['h_m'].Fill( p.M )
-                h_nocut['h_spin'].Fill( p.Spin )
+                h_nocut['h_pt'].Fill( p.PT, w )
+                h_nocut['h_eta'].Fill( p.Eta, w )
+                h_nocut['h_phi'].Fill( p.Phi, w )
+                h_nocut['h_m'].Fill( p.M, w )
+                h_nocut['h_spin'].Fill( p.Spin, w )
                 num_h += 1
             # Intermediate state Z
-            if math.fabs(p.PID) == 23 and p.Status == 2:
+            if math.fabs(p.PID) == 23:
+                #and p.Status == 2:
                 p4_Z.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
-                h_nocut['Z_pt'].Fill( p.PT )
-                h_nocut['Z_eta'].Fill( p.Eta )
-                h_nocut['Z_phi'].Fill( p.Phi )
-                h_nocut['Z_m'].Fill( p.M )
-                h_nocut['Z_spin'].Fill( p.Spin )
+                h_nocut['Z_pt'].Fill( p.PT, w )
+                h_nocut['Z_eta'].Fill( p.Eta, w )
+                h_nocut['Z_phi'].Fill( p.Phi, w )
+                h_nocut['Z_m'].Fill( p.M, w )
+                h_nocut['Z_spin'].Fill( p.Spin, w )
                 num_Z += 1
             # Final state b
-            if math.fabs(p.PID) == 5 and p.Status == 2:
-                h_nocut['inclusive_b_pt'].Fill( p.PT )
-                h_nocut['inclusive_b_eta'].Fill( p.Eta )
-                h_nocut['inclusive_b_phi'].Fill( p.Phi )
-                h_nocut['inclusive_b_m'].Fill( p.M )
-
+            if math.fabs(p.PID) == 5:
+                #and p.Status == 2:
+                h_nocut['inclusive_b_pt'].Fill( p.PT, w )
+                h_nocut['inclusive_b_eta'].Fill( p.Eta, w )
+                h_nocut['inclusive_b_phi'].Fill( p.Phi, w )
+                h_nocut['inclusive_b_m'].Fill( p.M, w )
+                num_b += 1
                 # Build true h from b daughters
                 if p.Mother1 != -1:
                     if math.fabs(Particles[p.Mother1].PID) == 25:
@@ -295,70 +322,41 @@ if __name__ == '__main__':
                   
         
         # end loop over Particles
+        h_nocut['num_e'].Fill(num_e)
+        h_nocut['num_h'].Fill(num_h)
+        h_nocut['num_Z'].Fill(num_Z)
+        h_nocut['num_b'].Fill(num_b)
 
-        if( Nparticles == index+1 ):
-            h_nocut['Nparticles'].Fill( Nparticles )
-        else:
-            h_nocut['Nparticles'].Fill( -1. )
-
-        h_nocut['ProcessID'].Fill(   ProcessID  )
-        h_nocut['Weight'].Fill(      Weight     )
-        h_nocut['CouplingQED'].Fill( CouplingQED)
-        h_nocut['CouplingQCD'].Fill( CouplingQCD)
-
-        
         # Fill true h from daughters histos
-        h_nocut['truerecoh_pt'].Fill(  p4_truerecoh.Pt() )
-        h_nocut['truerecoh_eta'].Fill( p4_truerecoh.Eta() )
-        h_nocut['truerecoh_phi'].Fill( p4_truerecoh.Phi() )
-        h_nocut['truerecoh_m'].Fill(   p4_truerecoh.M() )
+        h_nocut['truerecoh_pt'].Fill(  p4_truerecoh.Pt(), w )
+        h_nocut['truerecoh_eta'].Fill( p4_truerecoh.Eta(), w )
+        h_nocut['truerecoh_phi'].Fill( p4_truerecoh.Phi(), w )
+        h_nocut['truerecoh_m'].Fill(   p4_truerecoh.M(), w )
 
         # Fill true Z from daughters histos
-        h_nocut['truerecoZ_pt'].Fill(  p4_truerecoZ.Pt() )
-        h_nocut['truerecoZ_eta'].Fill( p4_truerecoZ.Eta() )
-        h_nocut['truerecoZ_phi'].Fill( p4_truerecoZ.Phi() )
-        h_nocut['truerecoZ_m'].Fill(   p4_truerecoZ.M() )
+        h_nocut['truerecoZ_pt'].Fill(  p4_truerecoZ.Pt(), w )
+        h_nocut['truerecoZ_eta'].Fill( p4_truerecoZ.Eta(), w )
+        h_nocut['truerecoZ_phi'].Fill( p4_truerecoZ.Phi(), w )
+        h_nocut['truerecoZ_m'].Fill(   p4_truerecoZ.M(), w )
 
         # Fill deltas between true h from daughters and gen h
-        h_nocut['truerecoh_deltapt'].Fill(  p4_truerecoh.Pt()  - p4_h.Pt() )
-        h_nocut['truerecoh_deltaeta'].Fill( p4_truerecoh.Eta() - p4_h.Eta())
-        h_nocut['truerecoh_deltaphi'].Fill( p4_truerecoh.Phi() - p4_h.Phi())
-        h_nocut['truerecoh_deltam'].Fill(   p4_truerecoh.M()   - p4_h.M()  )
+        h_nocut['truerecoh_deltapt'].Fill(  p4_truerecoh.Pt()  - p4_h.Pt() , w)
+        h_nocut['truerecoh_deltaeta'].Fill( p4_truerecoh.Eta() - p4_h.Eta(), w)
+        h_nocut['truerecoh_deltaphi'].Fill( p4_truerecoh.Phi() - p4_h.Phi(), w)
+        h_nocut['truerecoh_deltam'].Fill(   p4_truerecoh.M()   - p4_h.M()  , w)
         if p4_h.M() != 0:
-            h_nocut['truerecoh_resm'].Fill(  ( p4_truerecoh.M()   - p4_h.M()) / p4_h.M()  )
+            h_nocut['truerecoh_resm'].Fill(  ( p4_truerecoh.M()   - p4_h.M()) / p4_h.M(), w  )
 
         # Fill deltas between true Z from daughters and gen Z
-        h_nocut['truerecoZ_deltapt'].Fill(  p4_truerecoZ.Pt()  - p4_Z.Pt() )
-        h_nocut['truerecoZ_deltaeta'].Fill( p4_truerecoZ.Eta() - p4_Z.Eta())
-        h_nocut['truerecoZ_deltaphi'].Fill( p4_truerecoZ.Phi() - p4_Z.Phi())
-        h_nocut['truerecoZ_deltam'].Fill(   p4_truerecoZ.M()   - p4_Z.M()  )
+        h_nocut['truerecoZ_deltapt'].Fill(  p4_truerecoZ.Pt()  - p4_Z.Pt() , w)
+        h_nocut['truerecoZ_deltaeta'].Fill( p4_truerecoZ.Eta() - p4_Z.Eta(), w)
+        h_nocut['truerecoZ_deltaphi'].Fill( p4_truerecoZ.Phi() - p4_Z.Phi(), w)
+        h_nocut['truerecoZ_deltam'].Fill(   p4_truerecoZ.M()   - p4_Z.M()  , w)
         if p4_Z.M() != 0:
-            h_nocut['truerecoZ_resm'].Fill(   ( p4_truerecoZ.M()   - p4_Z.M()) / p4_Z.M()  )
+            h_nocut['truerecoZ_resm'].Fill(   ( p4_truerecoZ.M()   - p4_Z.M()) / p4_Z.M(), w  )
         
 
-        # Check BR
-        BR_code = 0
-        if (numElectrons > 1 and numMuons ==0 and numTaus ==0) or \
-               (numElectrons ==0 and numMuons > 1 and numTaus ==0) or \
-               (numElectrons == 1 and numMuons == 1 and numTaus==0) or \
-               (numElectrons ==0 and numMuons ==0 and numTaus > 1) or \
-               (numElectrons ==1 and numMuons ==0 and numTaus==1) or \
-               (numElectrons ==0 and numMuons==1 and numTaus ==1):
-            # Dileptons
-            BR_code = 1
-        elif numElectrons == 1 and numMuons == 0 and numTaus ==0:
-            # e+jets
-            BR_code = 2
-        elif numElectrons == 0 and numMuons == 1 and numTaus ==0:
-            # mu+jets
-            BR_code = 3
-        elif numElectrons == 0 and numMuons == 0 and numTaus ==0:
-            # All jets
-            BR_code = 5
-        else:
-            # tau+jets
-            BR_code = 4
-
+        
 
             
     # END loop over entries
