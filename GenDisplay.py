@@ -155,8 +155,6 @@ if __name__ == '__main__':
     
         
         
-    print cTerm.GREEN+"Output file name: "+outname+cTerm.END
-
     if options.quit == False:
         # Wait
         rep = ''
