@@ -105,9 +105,13 @@ if __name__ == '__main__':
     print 'Fetching plots from {initialDirectory}'.format(initialDirectory=initialDirectory)
 
     tanbeta = 2
+    collider = 'cepc'
+
+# Dictionary Format: (tanbeta, collider) : (runCode, sinbma, xsec) )
+
     
-    bma  = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[tanbeta][0]), "READ")
-    bpa = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bpa[tanbeta][0]), "READ")
+    bma  = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0]), "READ")
+    bpa = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bpa[(tanbeta,collider)][0]), "READ")
     
     for h in hList:
         h_bma = bma.Get(h)
