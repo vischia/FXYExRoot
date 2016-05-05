@@ -254,6 +254,8 @@ if __name__ == '__main__':
         p4_recoh = ROOT.TLorentzVector()
         p4_recoZ = ROOT.TLorentzVector()
 
+        init_bList = []
+        
         truerecoh_sumpt = 0
         truerecoZ_sumpt = 0
         recoZ_sumpt = 0
@@ -336,6 +338,12 @@ if __name__ == '__main__':
                         p4_truerecoZ += p4temp
                         truerecoZ_sumpt += p.PT
 
+                # Build the b list
+                b_p4temp = ROOT.TLorentzVector()
+                b_p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
+                init_bList.append(b_p4temp)
+
+                        
         # end loop over Particles
 
 
@@ -381,13 +389,70 @@ if __name__ == '__main__':
 
         h_nocut['truerecoh_sumpt'].Fill(truerecoh_sumpt)
         h_nocut['truerecoZ_sumpt'].Fill(truerecoZ_sumpt)
+
+        # Play with different assignments for the b quarks
+        bList = sorted(init_bList, key=lambda v : v.Pt(), reverse=True)
+
+        # Assignment
+
+        # h pair: pair with closest mass
+        index1 = -1
+        index2 = -1
+        closestMass = 9999.
+
+        t_ind1=0
+        for first in bList:
+            t_ind2=0
+            for second in bList:
+                if first is not second:
+                    p4temp = first + second
+                    if(p4temp.M() - 125. < closestMass):
+                        closestMass = p4temp.M()
+                        index1 = t_ind1
+                        index2 = t_ind2
+                t_ind2 += 1
+            t_ind1 += 1
+                        
+        p4_recoh += bList[index1]
+        p4_recoh += bList[index2]
+        indexz = 0
+        for b in bList:
+            if indexz != index1 and indexz != index2:
+                p4_recoZ += b
+            indexz += 1
+
+        # Fill true h from daughters histos
+        h_nocut['recoh_pt'].Fill(  p4_recoh.Pt(), w )
+        h_nocut['recoh_eta'].Fill( p4_recoh.Eta(), w )
+        h_nocut['recoh_phi'].Fill( p4_recoh.Phi(), w )
+        h_nocut['recoh_m'].Fill(   p4_recoh.M(), w )
+
+        # Fill true Z from daughters histos
+        h_nocut['recoZ_pt'].Fill(  p4_recoZ.Pt(), w )
+        h_nocut['recoZ_eta'].Fill( p4_recoZ.Eta(), w )
+        h_nocut['recoZ_phi'].Fill( p4_recoZ.Phi(), w )
+        h_nocut['recoZ_m'].Fill(   p4_recoZ.M(), w )
+
+        # Fill deltas between true h from daughters and gen h
+        h_nocut['recoh_deltapt'].Fill(  p4_recoh.Pt()  - p4_h.Pt() , w)
+        h_nocut['recoh_deltaeta'].Fill( p4_recoh.Eta() - p4_h.Eta(), w)
+        h_nocut['recoh_deltaphi'].Fill( p4_recoh.Phi() - p4_h.Phi(), w)
+        h_nocut['recoh_deltam'].Fill(   p4_recoh.M()   - p4_h.M()  , w)
+        if p4_h.M() != 0:
+            h_nocut['recoh_resm'].Fill(  ( p4_recoh.M()   - p4_h.M()) / p4_h.M(), w  )
+            
+        # Fill deltas between true Z from daughters and gen Z
+        h_nocut['recoZ_deltapt'].Fill(  p4_recoZ.Pt()  - p4_Z.Pt() , w)
+        h_nocut['recoZ_deltaeta'].Fill( p4_recoZ.Eta() - p4_Z.Eta(), w)
+        h_nocut['recoZ_deltaphi'].Fill( p4_recoZ.Phi() - p4_Z.Phi(), w)
+        h_nocut['recoZ_deltam'].Fill(   p4_recoZ.M()   - p4_Z.M()  , w)
+        if p4_Z.M() != 0:
+            h_nocut['recoZ_resm'].Fill(   ( p4_recoZ.M()   - p4_Z.M()) / p4_Z.M(), w  )
+        
         h_nocut['recoZ_sumpt'].Fill(recoZ_sumpt)
         h_nocut['recoh_sumpt'].Fill(recoh_sumpt)
 
-            
-        print recoZ_sumpt
-        print recoh_sumpt
-                                
+                
 
             
     # END loop over entries
