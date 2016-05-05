@@ -62,6 +62,8 @@ def main(argv = None):
                       help="input samples. The options are: madgraph or whizard [default: %default]")
     parser.add_option("-i", "--inputDir", default="", help="Input directory")
     parser.add_option("-g", "--gluons", default=False, help="h to gluons", action="store_true")
+    parser.add_option('-t', '--tanbeta', dest='tanbeta', help='Specify the desired tan(beta) [2 --> 50]')
+    parser.add_option('-c', '--collider', dest='collider', help='Specify the desired collider [cepc|ilc]')
     parser.add_option("-o", "--outputDir", default="plots", help="Output directory")
     parser.add_option("-q","--quit",
                       action="store_true",
@@ -74,7 +76,11 @@ def main(argv = None):
 if __name__ == '__main__':
 
     options = main()
-    
+
+
+    tanbeta = options.tanbeta
+    collider = options.collider
+
     if options.batch:
         ROOT.gROOT.SetBatch()
         print cTerm.GREEN+"Run in batch mode."+cTerm.END
@@ -93,8 +99,9 @@ if __name__ == '__main__':
              'recoZ_sumpt'
              #, 'recoh_sumpt'
     ]
-    
-    os.system('mkdir -p {outputDir}'.format(outputDir=options.outputDir))
+
+    fullOutputDir = '{outputDir}/{collider}_{tanbeta}'.format(outputDir=options.outputDir,collider=collider,tanbeta=tanbeta)
+    os.system('mkdir -p {fullOutputDir}'.format(fullOutputDir=fullOutputDir))
 
     # Open input files
 
@@ -104,10 +111,7 @@ if __name__ == '__main__':
 
     print 'Fetching plots from {initialDirectory}'.format(initialDirectory=initialDirectory)
 
-    tanbeta = 2
-    collider = 'cepc'
-
-# Dictionary Format: (tanbeta, collider) : (runCode, sinbma, xsec) )
+    # Dictionary Format: (tanbeta, collider) : (runCode, sinbma, xsec) )
 
     
     bma  = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0]), "READ")
@@ -159,7 +163,7 @@ if __name__ == '__main__':
             h_comp_bma.Draw("samehist")
             h_comp_bpa.Draw("samehist")
 
-        c.Print('{outputDir}/{h}.png'.format(outputDir=options.outputDir,h=h))
+        c.Print('{fullOutputDir}/{h}.png'.format(fullOutputDir=fullOutputDir,h=h))
         
 
     
