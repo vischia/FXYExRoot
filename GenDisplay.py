@@ -27,6 +27,9 @@ import sys
 import os
 import math
 import re
+
+import scandict as sd
+
 # Check if pyROOT is available
 try:
     #from ROOT import *
@@ -100,54 +103,57 @@ if __name__ == '__main__':
         initialDirectory='../'
 
     print 'Fetching plots from {initialDirectory}'.format(initialDirectory=initialDirectory)
-    plus  = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_01_decayed_1/results_anal.root".format(initialDirectory=initialDirectory), "READ")
-    minus = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_05_decayed_1/results_anal.root".format(initialDirectory=initialDirectory), "READ")
+
+    tanbeta = 2
+    
+    bma  = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[tanbeta][0]), "READ")
+    bpa = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bpa[tanbeta][0]), "READ")
     
     for h in hList:
-        h_plus = plus.Get(h)
-        if not h_plus:
+        h_bma = bma.Get(h)
+        if not h_bma:
             continue
         print "Processing histogram ", h
-        print type(h_plus)
-        h_plus.SetName(h_plus.GetName()+'plus')
-        h_minus = minus.Get(h)
-        h_minus.SetName(h_minus.GetName()+'minus')
+        print type(h_bma)
+        h_bma.SetName(h_bma.GetName()+'bma')
+        h_bpa = bpa.Get(h)
+        h_bpa.SetName(h_bpa.GetName()+'bpa')
 
-        h_plus.SetLineColor(1)
-        h_minus.SetLineColor(2)
+        h_bma.SetLineColor(1)
+        h_bpa.SetLineColor(2)
 
-        h_plus.SetLineWidth(3)
-        h_minus.SetLineWidth(3)
+        h_bma.SetLineWidth(3)
+        h_bpa.SetLineWidth(3)
 
-        h_comp_plus = ROOT.TH1F()
-        h_comp_minus = ROOT.TH1F()
+        h_comp_bma = ROOT.TH1F()
+        h_comp_bpa = ROOT.TH1F()
                 
-        if h_plus.GetName().find('truerecoh_sumpt') != -1:
-            h_comp_plus=plus.Get('truerecoZ_sumpt')
-            h_comp_plus.SetName(h_comp_plus.GetName()+'plus')
-            h_comp_minus=minus.Get('truerecoZ_sumpt')
-            h_comp_minus.SetName(h_comp_minus.GetName()+'minus')
-        elif h_plus.GetName().find('recoh_sumpt') != -1 and h_plus.GetName().find('truerecoh_sumpt') == -1:
-            h_comp_plus=plus.Get('recoZ_sumpt')
-            h_comp_plus.SetName(h_comp_plus.GetName()+'plus')
-            h_comp_minus=minus.Get('recoZ_sumpt')
-            h_comp_minus.SetName(h_comp_minus.GetName()+'minus')
+        if h_bma.GetName().find('truerecoh_sumpt') != -1:
+            h_comp_bma=bma.Get('truerecoZ_sumpt')
+            h_comp_bma.SetName(h_comp_bma.GetName()+'bma')
+            h_comp_bpa=bpa.Get('truerecoZ_sumpt')
+            h_comp_bpa.SetName(h_comp_bpa.GetName()+'bpa')
+        elif h_bma.GetName().find('recoh_sumpt') != -1 and h_bma.GetName().find('truerecoh_sumpt') == -1:
+            h_comp_bma=bma.Get('recoZ_sumpt')
+            h_comp_bma.SetName(h_comp_bma.GetName()+'bma')
+            h_comp_bpa=bpa.Get('recoZ_sumpt')
+            h_comp_bpa.SetName(h_comp_bpa.GetName()+'bpa')
 
             
         c = ROOT.TCanvas("c", "c", 800,800)
         c.cd()
-        h_plus.SetMaximum(2*h_plus.GetMaximum())
-        h_plus.Draw("hist")
-        h_minus.Draw("samehist")
-        if h_comp_plus.GetName().find('sumpt') != -1:
-            h_comp_plus.SetLineColor(1)
-            h_comp_minus.SetLineColor(2)
-            h_comp_plus.SetLineWidth(3)
-            h_comp_minus.SetLineWidth(3)
-            h_comp_plus.SetLineStyle(2)
-            h_comp_minus.SetLineStyle(2)
-            h_comp_plus.Draw("samehist")
-            h_comp_minus.Draw("samehist")
+        h_bma.SetMaximum(2*h_bma.GetMaximum())
+        h_bma.Draw("hist")
+        h_bpa.Draw("samehist")
+        if h_comp_bma.GetName().find('sumpt') != -1:
+            h_comp_bma.SetLineColor(1)
+            h_comp_bpa.SetLineColor(2)
+            h_comp_bma.SetLineWidth(3)
+            h_comp_bpa.SetLineWidth(3)
+            h_comp_bma.SetLineStyle(2)
+            h_comp_bpa.SetLineStyle(2)
+            h_comp_bma.Draw("samehist")
+            h_comp_bpa.Draw("samehist")
 
         c.Print('{outputDir}/{h}.png'.format(outputDir=options.outputDir,h=h))
         
