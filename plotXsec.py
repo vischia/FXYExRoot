@@ -5,6 +5,10 @@ import sys
 from cTerm import *
 import scandict
 
+
+from optparse import OptionParser
+
+
 try:
     import ROOT
     print cTerm.GREEN+"ROOT module imported"+cTerm.END
@@ -55,14 +59,36 @@ def drawComparison(g1, g2, title, outLabel):
     h2.Draw("LP")
     
     leg.Draw()
-    c.Print(outLabel+'.png')
-    c.Print(outLabel+'.pdf')
+    c.Print(options.outputDir+'/'+outLabel+'.png')
+    c.Print(options.outputDir+'/'+outLabel+'.pdf')
     
     
-def main():
+def main(argv = None):
+    if argv == None:
+        argv = sys.argv[1:]
+        
+    usage = "usage: %prog [options]\n This script analyzes madgraph trees."
+    parser = OptionParser(usage)
+    parser.add_option("-b", "--batch", dest='batch', action="store_true", help="run ROOT in batch mode.")
+    parser.add_option("-o", "--outputDir", dest='outputDir', default="plots", help="Output directory")
+    (options, args) = parser.parse_args(sys.argv[1:])
+    #print options
+    #print args
+    return options
+ 
 
-    ROOT.gROOT.SetBatch()
-    print cTerm.GREEN+"Run in batch mode."+cTerm.END
+
+        
+
+if __name__ == '__main__':
+
+
+    options = main()
+
+
+    if options.batch:
+        ROOT.gROOT.SetBatch()
+        print cTerm.GREEN+"Run in batch mode."+cTerm.END
                                                             
     
     histos = {}
@@ -112,7 +138,3 @@ def main():
 
     drawComparison(histos['bma_cepc'], histos['bpa_cepc' ], "CEPC", "cepc_comparescenarios" )
     drawComparison(histos['bma_ilc'], histos['bpa_ilc' ], "ILC", "ilc_comparescenarios" )  
-
-if __name__ == '__main__':
-    main()
-
