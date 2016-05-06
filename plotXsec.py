@@ -24,9 +24,9 @@ except:
 
 
 
-def printDictEntry(tanbeta, collider, runCode, sinbma, xsec):
+def printDictEntry(tanbeta, collider, runCode, sinbma, xsec, xsecunc):
     print "---------------------------------------"
-    print 'Tanbeta: {tanbeta}, Collider: {collider}, RunCode: {runCode}, Sinbma: {sinbma}, Xsec: {xsec}'.format(tanbeta=tanbeta, collider=collider, runCode=runCode, sinbma=sinbma, xsec=xsec)
+    print 'Tanbeta: {tanbeta}, Collider: {collider}, RunCode: {runCode}, Sinbma: {sinbma}, Xsec: {xsec}, XsecUnc: {xsecunc}'.format(tanbeta=tanbeta, collider=collider, runCode=runCode, sinbma=sinbma, xsec=xsec, xsecunc=xsecunc)
     
 
 def drawComparison(g1, g2, title, leg1, leg2, outLabel):
@@ -45,6 +45,9 @@ def drawComparison(g1, g2, title, leg1, leg2, outLabel):
     c = ROOT.TCanvas("c", title, 800, 800)
     leg = ROOT.TLegend(0.6,0.1,0.9,0.4)
 
+    ROOT.gPad.SetGridx()
+    ROOT.gPad.SetGridy()
+    
     lowminimum=1.2e-07
     lowmaximum=6.0e-04
     
@@ -75,8 +78,8 @@ def drawComparison(g1, g2, title, leg1, leg2, outLabel):
     leg.AddEntry(h1, leg1, "l")
     leg.AddEntry(h2, leg2, "l")
 
-    h1.Draw("LPA")
-    h2.Draw("LP")
+    h1.Draw("A3")
+    h2.Draw("3")
     
     leg.Draw()
     c.Print(options.outputDir+'/'+outLabel+'.png')
@@ -113,20 +116,25 @@ if __name__ == '__main__':
     
     histos = {}
     
-    histos['bma_cepc'] = ROOT.TGraph(29); histos['bma_cepc'].SetName('bma_cepc'); histos['bma_cepc'].SetTitle('CEPC: sin(#beta-#alpha) = +1')
-    histos['bma_ilc' ] = ROOT.TGraph(29); histos['bma_ilc' ].SetName('bma_ilc' ); histos['bma_ilc' ].SetTitle('ILC: sin(#beta-#alpha) = +1' )
-    histos['bpa_cepc'] = ROOT.TGraph(29); histos['bpa_cepc'].SetName('bpa_cepc'); histos['bpa_cepc'].SetTitle('CEPC: sin(#beta+#alpha) = +1')
-    histos['bpa_ilc' ] = ROOT.TGraph(29); histos['bpa_ilc' ].SetName('bpa_ilc' ); histos['bpa_ilc' ].SetTitle('ILC: sin(#beta+#alpha) = +1' )
+    histos['bma_cepc'] = ROOT.TGraphErrors(29); histos['bma_cepc'].SetName('bma_cepc'); histos['bma_cepc'].SetTitle('CEPC: sin(#beta-#alpha) = +1')
+    histos['bma_ilc' ] = ROOT.TGraphErrors(29); histos['bma_ilc' ].SetName('bma_ilc' ); histos['bma_ilc' ].SetTitle('ILC: sin(#beta-#alpha) = +1' )
+    histos['bpa_cepc'] = ROOT.TGraphErrors(29); histos['bpa_cepc'].SetName('bpa_cepc'); histos['bpa_cepc'].SetTitle('CEPC: sin(#beta+#alpha) = +1')
+    histos['bpa_ilc' ] = ROOT.TGraphErrors(29); histos['bpa_ilc' ].SetName('bpa_ilc' ); histos['bpa_ilc' ].SetTitle('ILC: sin(#beta+#alpha) = +1' )
 
     histos['bma_cepc'].SetLineWidth(3)
     histos['bma_ilc' ].SetLineWidth(3)
     histos['bpa_cepc'].SetLineWidth(3)
     histos['bpa_ilc' ].SetLineWidth(3)
 
-    histos['bma_cepc'].SetLineColor(1)
-    histos['bma_ilc' ].SetLineColor(1)
+    histos['bma_cepc'].SetLineColor(4)
+    histos['bma_ilc' ].SetLineColor(4)
     histos['bpa_cepc'].SetLineColor(2)
     histos['bpa_ilc' ].SetLineColor(2)
+
+    histos['bma_cepc'].SetFillColor(4)
+    histos['bma_ilc' ].SetFillColor(4)
+    histos['bpa_cepc'].SetFillColor(2)
+    histos['bpa_ilc' ].SetFillColor(2)
 
     histos['bma_cepc'].SetLineStyle(1)
     histos['bma_ilc' ].SetLineStyle(2)
@@ -136,22 +144,26 @@ if __name__ == '__main__':
     tanbetaDict = {'2':1,'3':2,'4':3,'5':4,'6':5,'7':6,'8':7,'9':8,'10':9,'12':10,'14':11,'16':12,'18':13,'20':14,'22':15,'24':16,'26':17,'28':18,'30':19,'32':20,'34':21,'36':22,'38':23,'40':24,'42':25,'44':26,'46':27,'48':28,'50':29 }
         
 
-    for (tanbeta, collider), (runCode, sinbma, xsec) in scandict.bma.viewitems():
-        #printDictEntry(tanbeta, collider, runCode, sinbma, xsec)
+    for (tanbeta, collider), (runCode, sinbma, xsec, xsecunc) in scandict.bma.viewitems():
+        #printDictEntry(tanbeta, collider, runCode, sinbma, xsec, xsecunc)
         if tanbeta == '1':
             continue
             
         if collider == 'cepc':
-            histos['bma_cepc'].SetPoint(tanbetaDict[tanbeta]-1,float(tanbeta), float(xsec))
+            histos['bma_cepc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
+            histos['bma_cepc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
         elif collider == 'ilc':
-            histos['bma_ilc'].SetPoint(tanbetaDict[tanbeta]-1,float(tanbeta), float(xsec))
-            
-    for (tanbeta, collider), (runCode, sinbma, xsec) in scandict.bpa.viewitems():
-        #printDictEntry(tanbeta, collider, runCode, sinbma, xsec)
+            histos['bma_ilc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
+            histos['bma_ilc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
+
+    for (tanbeta, collider), (runCode, sinbma, xsec, xsecunc) in scandict.bpa.viewitems():
+        #printDictEntry(tanbeta, collider, runCode, sinbma, xsec, xsecunc)
         if collider == 'cepc':
-            histos['bpa_cepc'].SetPoint(tanbetaDict[tanbeta]-1,float(tanbeta), float(xsec))
+            histos['bpa_cepc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
+            histos['bpa_cepc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
         elif collider == 'ilc':
-            histos['bpa_ilc'].SetPoint(tanbetaDict[tanbeta]-1,float(tanbeta), float(xsec))
+            histos['bpa_ilc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
+            histos['bpa_ilc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
 
     drawComparison(histos['bma_cepc'], histos['bma_ilc' ], "sin(#beta-#alpha) = +1", "CEPC", "ILC", "bma_comparecolliders" )
     drawComparison(histos['bpa_cepc'], histos['bpa_ilc' ], "sin(#beta+#alpha) = +1", "CEPC", "ILC", "bpa_comparecolliders" )

@@ -21,8 +21,9 @@ def printInfo(url):
                 continue
             runCode = theref.split('_')[1]
             xsec = i.contents[0]
-            returnDict[runCode] = xsec
-            print runCode, ': ', xsec, ', '
+            unc  = i.contents[2]
+            returnDict[runCode] = (xsec, unc)
+            print runCode, ': ', xsec, ', ', unc, ', '
         return returnDict
     except Exception as i:
         print "Caught error: ", i
