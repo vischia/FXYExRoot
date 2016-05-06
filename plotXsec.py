@@ -29,7 +29,7 @@ def printDictEntry(tanbeta, collider, runCode, sinbma, xsec):
     print 'Tanbeta: {tanbeta}, Collider: {collider}, RunCode: {runCode}, Sinbma: {sinbma}, Xsec: {xsec}'.format(tanbeta=tanbeta, collider=collider, runCode=runCode, sinbma=sinbma, xsec=xsec)
     
 
-def drawComparison(g1, g2, title, outLabel):
+def drawComparison(g1, g2, title, leg1, leg2, outLabel):
 
     h1=g1
     h2=g2
@@ -37,23 +37,43 @@ def drawComparison(g1, g2, title, outLabel):
     h1.SetTitle(title)
     h2.SetTitle(title)
 
+    h1.GetXaxis().SetTitle('tan#beta')
+    h1.GetYaxis().SetTitle('#sigma^{2HDM}(ee#rightarrow hZ #rightarrow b#bar{b}b#bar{b})')
+    h1.GetYaxis().SetTitleOffset(1.4)
+    
     # Build the comparison plots
     c = ROOT.TCanvas("c", title, 800, 800)
     leg = ROOT.TLegend(0.6,0.1,0.9,0.4)
 
-    h1.SetMaximum(1.2e-05)
-    h2.SetMaximum(1.2e-05)
-    h1.SetMinimum(1.2e-06)
-    h2.SetMinimum(1.2e-06)
-    if h1.GetName().find('cepc') != -1:
+    lowminimum=1.2e-07
+    lowmaximum=6.0e-04
+    
+    if h1.GetName().find('cepc') == -1 and h2.GetName().find('cepc') == -1:
+        h1.SetMaximum(1.2e-05)
+        h2.SetMaximum(1.2e-05)
+        h1.SetMinimum(1.2e-06)
+        h2.SetMinimum(1.2e-06)
+    if h1.GetName().find('cepc') != -1 and h2.GetName().find('cepc') == -1:
+        h1.SetMaximum(lowmaximum)
+        h2.SetMaximum(lowmaximum)
+        h1.SetMinimum(lowminimum)
+        h2.SetMinimum(lowminimum)
+        ROOT.gPad.SetLogy()
+    if h1.GetName().find('cepc') != -1 and h2.GetName().find('cepc') == -1:
+        h1.SetMaximum(lowmaximum)
+        h2.SetMaximum(lowmaximum)
+        h1.SetMinimum(lowminimum)
+        h2.SetMinimum(lowminimum)
+        ROOT.gPad.SetLogy()
+    if h2.GetName().find('cepc') != -1 and h2.GetName().find('cepc') != -1:
         h1.SetMaximum(6e-05)
-        h1.SetMinimum(1e-06)
-    if h2.GetName().find('cepc') != -1:
-        h1.SetMaximum(6e-05)
-        h1.SetMinimum(1e-06)
+        h2.SetMaximum(6e-05)
+        h1.SetMinimum(lowminimum)
+        h2.SetMinimum(lowminimum)
+        #ROOT.gPad.SetLogy()
 
-    leg.AddEntry(h1, h1.GetName(), "l")
-    leg.AddEntry(h2, h2.GetName(), "l")
+    leg.AddEntry(h1, leg1, "l")
+    leg.AddEntry(h2, leg2, "l")
 
     h1.Draw("LPA")
     h2.Draw("LP")
@@ -133,8 +153,8 @@ if __name__ == '__main__':
         elif collider == 'ilc':
             histos['bpa_ilc'].SetPoint(tanbetaDict[tanbeta]-1,float(tanbeta), float(xsec))
 
-    drawComparison(histos['bma_cepc'], histos['bma_ilc' ], "sin(#beta-#alpha) = +1", "bma_comparecolliders" )
-    drawComparison(histos['bpa_cepc'], histos['bpa_ilc' ], "sin(#beta+#alpha) = +1", "bpa_comparecolliders" )
+    drawComparison(histos['bma_cepc'], histos['bma_ilc' ], "sin(#beta-#alpha) = +1", "CEPC", "ILC", "bma_comparecolliders" )
+    drawComparison(histos['bpa_cepc'], histos['bpa_ilc' ], "sin(#beta+#alpha) = +1", "CEPC", "ILC", "bpa_comparecolliders" )
 
-    drawComparison(histos['bma_cepc'], histos['bpa_cepc' ], "CEPC", "cepc_comparescenarios" )
-    drawComparison(histos['bma_ilc'], histos['bpa_ilc' ], "ILC", "ilc_comparescenarios" )  
+    drawComparison(histos['bma_cepc'], histos['bpa_cepc' ], "CEPC", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", "cepc_comparescenarios" )
+    drawComparison(histos['bma_ilc'], histos['bpa_ilc' ], "ILC", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", "ilc_comparescenarios" )  
