@@ -126,36 +126,41 @@ bpa = {
     ('50', 'ilc'):('59','0.9992'  ,'1.102e-05','7.7e-08')
 }
 
-
+d1 = { ('bma','ilc',  '{i}'.format(i=i)): ( '01','0.0018030','1.2e-05','0.0815942') for i in range(1,51) }
+d2 = { ('bma','cepc', '{i}'.format(i=i)): ( '01','0.008177','5.8e-05','0.0815942')  for i in range(1,51) }
 
 # (scenario, collider, tanbeta) : ( runCode, xsec, xsecUnc, branchingRatio)
-gg ={
+gg ={ 
+    
+('bpa', 'ilc,','2' ) : ( '02','0.0006564','3.4e-06','0.1199650'),
+('bpa', 'ilc,','5' ) : ( '03','0.0015390','1.0e-05','0.1051740'),
+('bpa', 'ilc,','10') : ( '04','0.0017200','9.3e-06','0.1023830'),
 
-('bma', 'ilc,','*' ) : ( '01','0.0018030','1.2e-05','0.0815942')
-('bpa', 'ilc,','2' ) : ( '02','0.0006564','3.4e-06','0.1199650')
-('bpa', 'ilc,','5' ) : ( '03','0.0015390','1.0e-05','0.1051740')
-('bpa', 'ilc,','10') : ( '04','0.0017200','9.3e-06','0.1023830')
-
-('bma', 'cepc', '*' ) : ( '01','0.008177','5.8e-05','0.0815942')
-('bpa', 'cepc', '2' ) : ( '02','0.002966','2.0e-05','0.1199650')
-('bpa', 'cepc', '5' ) : ( '03','0.007020','4.7e-05','0.1051740')
+('bpa', 'cepc', '2' ) : ( '02','0.002966','2.0e-05','0.1199650'), 
+('bpa', 'cepc', '5' ) : ( '03','0.007020','4.7e-05','0.1051740'), 
 ('bpa', 'cepc', '10') : ( '04','0.007788','4.0e-05','0.1023830')
 
 }
+
+gg.update(d1)
+gg.update(d2)
 
 
 # Check Dictionary
 def checkDict():
     print "tanbeta 1"
     print "\t bma:"
-    print "\t\t ", bma[(1, 'cepc')]
-    print "\t\t ", bma[(1, 'cepc')][0]
-    print "\t\t ", bma[(1, 'cepc')][1]
-    print "\t\t ", bma[(1, 'cepc')][2]
-    print "\t\t ", bma[(1, 'cepc')][3]
+    print "\t\t ", bma[('1', 'cepc')]
+    print "\t\t ", bma[('1', 'cepc')][0]
+    print "\t\t ", bma[('1', 'cepc')][1]
+    print "\t\t ", bma[('1', 'cepc')][2]
+    print "\t\t ", bma[('1', 'cepc')][3]
     print "\t bpa:"
-    print "\t\t ", bpa[(2, 'cepc')]
-    print "\t\t ", bpa[(2, 'cepc')][0]
-    print "\t\t ", bpa[(2, 'cepc')][1]
-    print "\t\t ", bpa[(2, 'cepc')][2]
-    print "\t\t ", bpa[(2, 'cepc')][3]
+    print "\t\t ", bpa[('2', 'cepc')]
+    print "\t\t ", bpa[('2', 'cepc')][0]
+    print "\t\t ", bpa[('2', 'cepc')][1]
+    print "\t\t ", bpa[('2', 'cepc')][2]
+    print "\t\t ", bpa[('2', 'cepc')][3]
+
+
+    print gg

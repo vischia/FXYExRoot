@@ -46,11 +46,15 @@ def main():
     task_list= []
     #dirList = subprocess.Popen(["find", "../Rui_{collider}/ -maxdepth 2 -type d -name 'run_*' | grep Events".format(collider=opt.collider)], stdout=subprocess.PIPE).communicate()[0]
     ###initList = os.listdir('../Rui_{collider}/Events/'.format(collider=opt.collider))
-    initialDirectory='../4b/'
-    if opt.gluons:
-        initialDirectory='../'
+
+    initialDirectory='../'
     initList = os.listdir('{initialDirectory}Rui_{collider}/Events/'.format(initialDirectory=initialDirectory,collider=opt.collider))
-    dirList = [x for x in initList if x.find("decayed") is not -1 ]
+    dirList = []
+    if opt.gluons:
+        dirList = [x for x in initList if x.find("run") is not -1 ]
+    else:
+        dirList = [x for x in initList if x.find("decayed") is not -1 ]
+
     listCommand=""
     for inputDir in dirList:
         task_list.append( ('{initialDirectory}Rui_{collider}/Events/{inputDir}'.format(initialDirectory=initialDirectory,collider=opt.collider, inputDir=inputDir)) )
