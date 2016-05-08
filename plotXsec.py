@@ -225,7 +225,7 @@ if __name__ == '__main__':
         if collider == 'cepc':
             histos['bpa_cepc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
             histos['bpa_cepc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
-            if tanbeta == 2 or tanbeta == 5 or tanbeta == 10:
+            if tanbeta == '2' or tanbeta == '5' or tanbeta == '10':
                 (rc, xs, xsunc, br) = scandict.gg[('bpa','cepc',tanbeta)]
                 histos['bpa_cepc_scaled'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xs)*float(br))
                 histos['bpa_cepc_scaled'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsunc)*float(br))
@@ -233,7 +233,7 @@ if __name__ == '__main__':
         elif collider == 'ilc':
             histos['bpa_ilc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
             histos['bpa_ilc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
-            if tanbeta == 2 or tanbeta == 5 or tanbeta == 10:
+            if tanbeta == '2' or tanbeta == '5' or tanbeta == '10':
                 (rc, xs, xsunc, br) = scandict.gg[('bpa','ilc',tanbeta)]
                 histos['bpa_ilc_scaled'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xs)*float(br))
                 histos['bpa_ilc_scaled'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsunc)*float(br))
