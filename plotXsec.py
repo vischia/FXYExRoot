@@ -87,8 +87,18 @@ def drawComparison(g1, g2, title, leg1, leg2, outLabel):
     leg.AddEntry(h2, leg2, "l")
 
     if h1.GetName().find('ratio') != -1 or h2.GetName().find('ratio') != -1:
-        h1.Draw("PCA")
-        h2.Draw("PC")
+
+        if h1.GetName().find('bpa') != -1:
+            h1.Draw("PLA")
+        else:
+            h1.Draw("PCA")
+        if h2.GetName().find('bpa') != -1:
+            h2.SetMarkerSize(3)
+            h2.Draw("P*")
+        else:
+            h2.SetMarkerSize(3)
+            h2.Draw("P*")
+
     else:
         h1.Draw("A3")
         h2.Draw("3")
@@ -126,6 +136,8 @@ def makeRatio(h1, h2, name):
             
     ratio.SetLineWidth( h1.GetLineWidth() )
     ratio.SetLineColor( h1.GetLineColor() )
+    ratio.SetMarkerColor( h1.GetLineColor() )
+    ratio.SetMarkerStyle( 21 )
     ratio.SetFillColor( h1.GetFillColor() )
     ratio.SetLineStyle( h1.GetLineStyle() )
 

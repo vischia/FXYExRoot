@@ -45,6 +45,25 @@ except:
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 from optparse import OptionParser
 
+
+def deltaPhi(v1, v2):
+
+    M_PI = 3.1415926
+    result = v1.Phi() - v2.Phi()
+    while (result > M_PI):
+        result -= 2*M_PI;
+    while (result <= -M_PI):
+        result += 2*M_PI;
+    return result;
+
+def deltaR(v1, v2):
+    
+   e1 = v1.Eta();
+   e2 = v2.Eta();
+   dp=deltaPhi(v1, v2)
+   result = (e1-e2)*(e1-e2) + dp*dp
+   return result
+
 def main(argv = None):
     if argv == None:
         argv = sys.argv[1:]
@@ -153,6 +172,11 @@ if __name__ == '__main__':
     h_nocut['Z_m']    = ROOT.TH1F("Z_m","Z mass [GeV]",200,0.,200)
     h_nocut['Z_spin'] = ROOT.TH1F("Z_spin","Z spin [GeV]",6,-3.,3.)
 
+    # Differences between h and Z
+    h_nocut['hz_deltaphi'] = ROOT.TH1F("hz_deltaphi","#Delta#phi(h, Z)",40,-3.2,3.2)
+    h_nocut['hz_deltaR'] = ROOT.TH1F("hz_deltaR","#Delta R(h, Z)",50,0.,5.)
+
+    
     # Gen h from its b daughters
     h_nocut['truerecoh_pt']  = ROOT.TH1F("truerecoh_pt", "Reco h (from daughters) p_{T} [GeV]",100,0,500)
     h_nocut['truerecoh_eta'] = ROOT.TH1F("truerecoh_eta","Reco h (from daughters) #eta",100,-5,5)
@@ -162,11 +186,13 @@ if __name__ == '__main__':
     h_nocut['truerecoh_deltapt']  = ROOT.TH1F("truerecoh_deltapt", "Reco h (from daughters) #Delta p_{T} [GeV]",100,0,500)
     h_nocut['truerecoh_deltaeta'] = ROOT.TH1F("truerecoh_deltaeta","Reco h (from daughters) #Delta #eta",100,-5,5)
     h_nocut['truerecoh_deltaphi'] = ROOT.TH1F("truerecoh_deltaphi","Reco h (from daughters) #Delta #phi",80,-3.2,3.2)
-    h_nocut['truerecoh_deltam']   = ROOT.TH1F("truerecoh_deltam",  "Reco h (from daughters) #Delta mass [GeV]",200,0.,200)
+    h_nocut['truerecoh_deltam']   = ROOT.TH1F("truerecoh_deltam",  "Reco h (from daughters) #Delta mass [GeV]",50,0.,200)
     h_nocut['truerecoh_resm']     = ROOT.TH1F("truerecoh_resm",    "Reco h (from daughters) mass resolution [GeV]",100,-10,10)
 
     h_nocut['truerecoh_sumpt'] = ROOT.TH1F("truerecoh_sumpt", "Sum pT of h daughters [GeV]", 100, 0., 500.)
 
+    h_nocut['truerecoh_internal_deltaphi'] = ROOT.TH1F("truerecoh_internal_deltaphi","#Delta#phi between h daughters",40,-3.2,3.2)
+    h_nocut['truerecoh_internal_deltaR']   = ROOT.TH1F("truerecoh_internal_deltaR","#Delta R between h daughters",50,0.,5.)
     
     # Gen Z from its b daughters
     h_nocut['truerecoZ_pt']  = ROOT.TH1F("truerecoZ_pt", "Reco Z (from daughters) p_{T} [GeV]",100,0,500)
@@ -177,11 +203,18 @@ if __name__ == '__main__':
     h_nocut['truerecoZ_deltapt']  = ROOT.TH1F("truerecoZ_deltapt", "Reco Z (from daughters) #Delta p_{T} [GeV]",100,0,500)
     h_nocut['truerecoZ_deltaeta'] = ROOT.TH1F("truerecoZ_deltaeta","Reco Z (from daughters) #Delta #eta",100,-5,5)
     h_nocut['truerecoZ_deltaphi'] = ROOT.TH1F("truerecoZ_deltaphi","Reco Z (from daughters) #Delta #phi",80,-3.2,3.2)
-    h_nocut['truerecoZ_deltam']   = ROOT.TH1F("truerecoZ_deltam",  "Reco Z (from daughters) #Delta mass [GeV]",200,0.,200)
+    h_nocut['truerecoZ_deltam']   = ROOT.TH1F("truerecoZ_deltam",  "Reco Z (from daughters) #Delta mass [GeV]",50,0.,200)
     h_nocut['truerecoZ_resm']     = ROOT.TH1F("truerecoZ_resm",    "Reco Z (from daughters) mass resolution [GeV]",100,-10,10)
 
     h_nocut['truerecoZ_sumpt'] = ROOT.TH1F("truerecoZ_sumpt", "Sum pT of Z daughters [GeV]", 100, 0., 500.)
-        
+
+    h_nocut['truerecohz_deltaphi'] = ROOT.TH1F("truerecohz_deltaphi","#Delta#phi(h, Z) from daughters",40,-3.2,3.2)
+    h_nocut['truerecohz_deltaR'] = ROOT.TH1F("truerecohz_deltaR","#Delta R(h, Z) from daughters",50,0.,5.)
+
+    h_nocut['truerecoz_internal_deltaphi'] = ROOT.TH1F("truerecoz_internal_deltaphi","#Delta#phi between Z daughters",40,-3.2,3.2)
+    h_nocut['truerecoz_internal_deltaR']   = ROOT.TH1F("truerecoz_internal_deltaR","#Delta R between Z daughters",50,0.,5.)
+    
+    
     # Reco h from chosen bs
     h_nocut['recoh_pt']  = ROOT.TH1F("recoh_pt", "Reco h (from assignment) p_{T} [GeV]",100,0,500)
     h_nocut['recoh_eta'] = ROOT.TH1F("recoh_eta","Reco h (from assignment) #eta",100,-5,5)
@@ -191,11 +224,15 @@ if __name__ == '__main__':
     h_nocut['recoh_deltapt']  = ROOT.TH1F("recoh_deltapt", "Reco h (from assignment) #Delta p_{T} [GeV]",100,0,500)
     h_nocut['recoh_deltaeta'] = ROOT.TH1F("recoh_deltaeta","Reco h (from assignment) #Delta #eta",100,-5,5)
     h_nocut['recoh_deltaphi'] = ROOT.TH1F("recoh_deltaphi","Reco h (from assignment) #Delta #phi",80,-3.2,3.2)
-    h_nocut['recoh_deltam']   = ROOT.TH1F("recoh_deltam",  "Reco h (from assignment) #Delta mass [GeV]",200,0.,200)
+    h_nocut['recoh_deltam']   = ROOT.TH1F("recoh_deltam",  "Reco h (from assignment) #Delta mass [GeV]",50,0.,200)
     h_nocut['recoh_resm']     = ROOT.TH1F("recoh_resm",    "Reco h (from assignment) mass resolution [GeV]",100,-10,10)
 
     h_nocut['recoh_sumpt'] = ROOT.TH1F("recoh_sumpt", "Sum pT of b quarks assigned to h [GeV]", 100, 0., 500.)
-        
+
+    h_nocut['recoh_internal_deltaphi'] = ROOT.TH1F("recoh_internal_deltaphi","#Delta#phi between h assigned bs",40,-3.2,3.2)
+    h_nocut['recoh_internal_deltaR']   = ROOT.TH1F("recoh_internal_deltaR","#Delta R between h assigned bs",50,0.,5.)
+    
+    
     # Reco Z from chosen bs
     h_nocut['recoZ_pt']  = ROOT.TH1F("recoZ_pt", "Reco Z (from assignment) p_{T} [GeV]",100,0,500)
     h_nocut['recoZ_eta'] = ROOT.TH1F("recoZ_eta","Reco Z (from assignment) #eta",100,-5,5)
@@ -205,10 +242,18 @@ if __name__ == '__main__':
     h_nocut['recoZ_deltapt']  = ROOT.TH1F("recoZ_deltapt", "Reco Z (from assignment) #Delta p_{T} [GeV]",100,0,500)
     h_nocut['recoZ_deltaeta'] = ROOT.TH1F("recoZ_deltaeta","Reco Z (from assignment) #Delta #eta",100,-5,5)
     h_nocut['recoZ_deltaphi'] = ROOT.TH1F("recoZ_deltaphi","Reco Z (from assignment) #Delta #phi",80,-3.2,3.2)
-    h_nocut['recoZ_deltam']   = ROOT.TH1F("recoZ_deltam",  "Reco Z (from assignment) #Delta mass [GeV]",200,0.,200)
+    h_nocut['recoZ_deltam']   = ROOT.TH1F("recoZ_deltam",  "Reco Z (from assignment) #Delta mass [GeV]",50,0.,200)
     h_nocut['recoZ_resm']     = ROOT.TH1F("recoZ_resm",    "Reco Z (from assignment) mass resolution [GeV]",100,-10,10)
 
     h_nocut['recoZ_sumpt'] = ROOT.TH1F("recoZ_sumpt", "Sum pT of b quarks assigned to Z [GeV]", 100, 0., 500.)
+
+    h_nocut['recohz_deltaphi'] = ROOT.TH1F("recohz_deltaphi","#Delta#phi(h, Z) from assignment",40,-3.2,3.2)
+    h_nocut['recohz_deltaR'] = ROOT.TH1F("recohz_deltaR","#Delta R(h, Z) from assignment",50,0.,5.)
+
+    h_nocut['recoz_internal_deltaphi'] = ROOT.TH1F("recoz_internal_deltaphi","#Delta#phi between Z daughters",40,-3.2,3.2)
+    h_nocut['recoz_internal_deltaR']   = ROOT.TH1F("recoz_internal_deltaR","#Delta R between Z daughters",50,0.,5.)
+
+
     
     h_nocut['inclusive_b_m']   = ROOT.TH1F("inclusive_b_m",  "Inclusive b mass [GeV]",50,0,10)
     h_nocut['inclusive_b_pt']  = ROOT.TH1F("inclusive_b_pt", "Inclusive b p_{T} [GeV]",100,0,500)
@@ -254,6 +299,12 @@ if __name__ == '__main__':
         p4_recoh = ROOT.TLorentzVector()
         p4_recoZ = ROOT.TLorentzVector()
 
+        truerecoh_bs = []
+        truerecoZ_bs = []
+        recoh_bs = []
+        recoZ_bs = []
+
+        
         init_bList = []
         
         truerecoh_sumpt = 0
@@ -329,7 +380,8 @@ if __name__ == '__main__':
                         p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
                         p4_truerecoh += p4temp
                         truerecoh_sumpt += p.PT
-
+                        truerecoh_bs.append(p4temp)
+                        
                 # Build true Z from b daughters
                 if p.Mother1 != -1:
                     if math.fabs(Particles[p.Mother1].PID) == 23:
@@ -337,6 +389,7 @@ if __name__ == '__main__':
                         p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
                         p4_truerecoZ += p4temp
                         truerecoZ_sumpt += p.PT
+                        truerecoZ_bs.append(p4temp)
 
                 # Build the b list
                 b_p4temp = ROOT.TLorentzVector()
@@ -373,7 +426,7 @@ if __name__ == '__main__':
         # Fill deltas between true h from daughters and gen h
         h_nocut['truerecoh_deltapt'].Fill(  p4_truerecoh.Pt()  - p4_h.Pt() , w)
         h_nocut['truerecoh_deltaeta'].Fill( p4_truerecoh.Eta() - p4_h.Eta(), w)
-        h_nocut['truerecoh_deltaphi'].Fill( p4_truerecoh.Phi() - p4_h.Phi(), w)
+        h_nocut['truerecoh_deltaphi'].Fill( deltaPhi(p4_truerecoh, p4_h), w)
         h_nocut['truerecoh_deltam'].Fill(   p4_truerecoh.M()   - p4_h.M()  , w)
         if p4_h.M() != 0:
             h_nocut['truerecoh_resm'].Fill(  ( p4_truerecoh.M()   - p4_h.M()) / p4_h.M(), w  )
@@ -381,7 +434,7 @@ if __name__ == '__main__':
         # Fill deltas between true Z from daughters and gen Z
         h_nocut['truerecoZ_deltapt'].Fill(  p4_truerecoZ.Pt()  - p4_Z.Pt() , w)
         h_nocut['truerecoZ_deltaeta'].Fill( p4_truerecoZ.Eta() - p4_Z.Eta(), w)
-        h_nocut['truerecoZ_deltaphi'].Fill( p4_truerecoZ.Phi() - p4_Z.Phi(), w)
+        h_nocut['truerecoZ_deltaphi'].Fill( deltaPhi(p4_truerecoZ, p4_Z), w)
         h_nocut['truerecoZ_deltam'].Fill(   p4_truerecoZ.M()   - p4_Z.M()  , w)
         if p4_Z.M() != 0:
             h_nocut['truerecoZ_resm'].Fill(   ( p4_truerecoZ.M()   - p4_Z.M()) / p4_Z.M(), w  )
@@ -400,6 +453,10 @@ if __name__ == '__main__':
         index2 = -1
         closestMass = 9999.
 
+        # z pair: the others
+        zindex1 = -1
+        zindex2 = -2
+        
         t_ind1=0
         for first in bList:
             t_ind2=0
@@ -415,11 +472,20 @@ if __name__ == '__main__':
                         
         p4_recoh += bList[index1]
         p4_recoh += bList[index2]
+        recoh_bs.append(bList[index1])
+        recoh_bs.append(bList[index2])
+        
         indexz = 0
         for b in bList:
             if indexz != index1 and indexz != index2:
+                if zindex1 == -1:
+                    zindex1 = indexz
+                else:
+                    zindex2 = indexz
                 p4_recoZ += b
             indexz += 1
+        recoZ_bs.append(bList[zindex1])
+        recoZ_bs.append(bList[zindex2])
 
         # Fill true h from daughters histos
         h_nocut['recoh_pt'].Fill(  p4_recoh.Pt(), w )
@@ -436,7 +502,7 @@ if __name__ == '__main__':
         # Fill deltas between true h from daughters and gen h
         h_nocut['recoh_deltapt'].Fill(  p4_recoh.Pt()  - p4_h.Pt() , w)
         h_nocut['recoh_deltaeta'].Fill( p4_recoh.Eta() - p4_h.Eta(), w)
-        h_nocut['recoh_deltaphi'].Fill( p4_recoh.Phi() - p4_h.Phi(), w)
+        h_nocut['recoh_deltaphi'].Fill( deltaPhi(p4_recoh, p4_h), w)
         h_nocut['recoh_deltam'].Fill(   p4_recoh.M()   - p4_h.M()  , w)
         if p4_h.M() != 0:
             h_nocut['recoh_resm'].Fill(  ( p4_recoh.M()   - p4_h.M()) / p4_h.M(), w  )
@@ -444,7 +510,7 @@ if __name__ == '__main__':
         # Fill deltas between true Z from daughters and gen Z
         h_nocut['recoZ_deltapt'].Fill(  p4_recoZ.Pt()  - p4_Z.Pt() , w)
         h_nocut['recoZ_deltaeta'].Fill( p4_recoZ.Eta() - p4_Z.Eta(), w)
-        h_nocut['recoZ_deltaphi'].Fill( p4_recoZ.Phi() - p4_Z.Phi(), w)
+        h_nocut['recoZ_deltaphi'].Fill( deltaPhi(p4_recoZ, p4_Z), w)
         h_nocut['recoZ_deltam'].Fill(   p4_recoZ.M()   - p4_Z.M()  , w)
         if p4_Z.M() != 0:
             h_nocut['recoZ_resm'].Fill(   ( p4_recoZ.M()   - p4_Z.M()) / p4_Z.M(), w  )
@@ -452,7 +518,37 @@ if __name__ == '__main__':
         h_nocut['recoZ_sumpt'].Fill(recoZ_sumpt)
         h_nocut['recoh_sumpt'].Fill(recoh_sumpt)
 
-                
+        h_nocut['hz_deltaphi']        .Fill(deltaPhi(p4_h        , p4_Z        ), w)
+        h_nocut['truerecohz_deltaphi'].Fill(deltaPhi(p4_truerecoh, p4_truerecoZ), w)
+        h_nocut['recohz_deltaphi']    .Fill(deltaPhi(p4_recoh    , p4_recoZ    ), w)
+
+        h_nocut['hz_deltaR']        .Fill(deltaR(p4_h        , p4_Z        ), w)
+        h_nocut['truerecohz_deltaR'].Fill(deltaR(p4_truerecoh, p4_truerecoZ), w)
+        h_nocut['recohz_deltaR']    .Fill(deltaR(p4_recoh    , p4_recoZ    ), w)
+
+
+        # Debug
+        if len(truerecoZ_bs) != 2 or len(truerecoh_bs) != 2:
+            print "Z bs: ", len(truerecoZ_bs), ", h bs: ", len(truerecoh_bs)
+            for p in Particles:
+                print "-------------"
+                print "PID: ", p.PID
+                print "Mother1: ", p.Mother1
+                print "Mother2: ", p.Mother2
+                print "Mother1 ID:", Particles[p.Mother1].PID if p.Mother1 != -1 else -1
+                print "Mother2 ID:", Particles[p.Mother2].PID if p.Mother2 != -1 else -1
+                print "Status: ", p.Status
+            
+        
+        h_nocut['truerecoz_internal_deltaphi'].Fill( deltaPhi(truerecoZ_bs[0], truerecoZ_bs[1]), w)
+        h_nocut['truerecoz_internal_deltaR']  .Fill( deltaR(  truerecoZ_bs[0], truerecoZ_bs[1]), w)
+        h_nocut['truerecoh_internal_deltaphi'].Fill( deltaPhi(truerecoh_bs[0], truerecoh_bs[1]), w)
+        h_nocut['truerecoh_internal_deltaR']  .Fill( deltaR(  truerecoh_bs[0], truerecoh_bs[1]), w)
+
+        h_nocut['recoz_internal_deltaphi'].Fill( deltaPhi(recoZ_bs[0], recoZ_bs[1]), w) 
+        h_nocut['recoz_internal_deltaR']  .Fill( deltaR(  recoZ_bs[0], recoZ_bs[1]), w) 
+        h_nocut['recoh_internal_deltaphi'].Fill( deltaPhi(recoh_bs[0], recoh_bs[1]), w) 
+        h_nocut['recoh_internal_deltaR']  .Fill( deltaR(  recoh_bs[0], recoh_bs[1]), w) 
 
             
     # END loop over entries

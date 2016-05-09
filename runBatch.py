@@ -49,12 +49,16 @@ def main():
 
     initialDirectory='../'
     initList = os.listdir('{initialDirectory}Rui_{collider}/Events/'.format(initialDirectory=initialDirectory,collider=opt.collider))
-    dirList = []
-    if opt.gluons:
-        dirList = [x for x in initList if x.find("run") is not -1 ]
-    else:
-        dirList = [x for x in initList if x.find("decayed") is not -1 ]
 
+
+    # Deactivated madspin
+    #dirList = []
+    #if opt.gluons:
+    #    dirList = [x for x in initList if x.find("run") is not -1 ]
+    #else:
+    #    dirList = [x for x in initList if x.find("decayed") is not -1 ]
+    dirList = [x for x in initList if x.find("run") is not -1 ]
+    
     listCommand=""
     for inputDir in dirList:
         task_list.append( ('{initialDirectory}Rui_{collider}/Events/{inputDir}'.format(initialDirectory=initialDirectory,collider=opt.collider, inputDir=inputDir)) )
