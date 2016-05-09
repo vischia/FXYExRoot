@@ -3,7 +3,7 @@ from BeautifulSoup import BeautifulSoup
 import optparse
 
 
-def parseInfo(url, gluons):
+def parseInfo(url, madspin):
     ab = anonBrowser()
     ab.anonymize()
     page = ab.open(url)
@@ -17,11 +17,11 @@ def parseInfo(url, gluons):
         returnDict = {}
         for i in xsecs:
             theref = i['href']
-            if gluons:
-                if theref.find('results.html') == -1 or theref.find('run_') == -1 :
+            if madspin:
+                if theref.find('results.html') == -1 or theref.find('decayed') == -1 :
                     continue
             else:
-                if theref.find('results.html') == -1 or theref.find('decayed') == -1 :
+                if theref.find('results.html') == -1 or theref.find('run_') == -1 :
                     continue
             runCode = theref.split('_')[1]
             xsec = i.contents[0]
@@ -37,16 +37,16 @@ def parseInfo(url, gluons):
 def main():
     parser = optparse.OptionParser('Usage%prog ' + '-u <target url>')
     parser.add_option('-u', dest='targetURL', type='string', help='specify target ULR')
-    parser.add_option('-g', dest='gluons', action='store_true', help='run on hZ -> bb (h undecayed)')
+    parser.add_option('-m', dest='madspin', action='store_true', help='fetch cross sections from madspin runs')
     (options, args) = parser.parse_args()
 
     url = options.targetURL
-    gluons = options.gluons
+    madspin = options.madspin
     if url == None:
         print parser.usage
         exit(0)
     else:
-        resultDict = parseInfo(url, gluons)
+        resultDict = parseInfo(url, madspin)
         # print resultDict
 if __name__ == '__main__':
     main()
