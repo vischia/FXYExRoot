@@ -66,5 +66,6 @@ elif  [ "$1" = "display" ]; then
     python GenDisplay.py -o plots/ -c ilc  -b -z mumu -t 50
 
 elif  [ "$1" = "plotxsec" ]; then
-    python plotXsec.py -b 
+    python plotXsec.py -b -z bb
+    python plotXsec.py -b -z mumu
 fi

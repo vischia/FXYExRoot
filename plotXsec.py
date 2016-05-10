@@ -4,7 +4,7 @@ import sys
 import math
 
 from cTerm import *
-import scandict
+import scandict as sd
 
 
 from optparse import OptionParser
@@ -153,8 +153,9 @@ def main(argv = None):
         
     usage = "usage: %prog [options]\n This script analyzes madgraph trees."
     parser = OptionParser(usage)
-    parser.add_option("-b", "--batch", dest='batch', action="store_true", help="run ROOT in batch mode.")
-    parser.add_option("-o", "--outputDir", dest='outputDir', default="plots", help="Output directory")
+    parser.add_option('-b', '--batch',     dest='batch', action="store_true", help='run ROOT in batch mode.')
+    parser.add_option('-o', '--outputDir', dest='outputDir', default="plots", help='Output directory')
+    parser.add_option('-z', '--zdecay',    dest='zdecay',    help='Z decay mode [bb|mumu]')
     (options, args) = parser.parse_args(sys.argv[1:])
     #print options
     #print args
@@ -212,8 +213,17 @@ if __name__ == '__main__':
 
 
 # (scenario, collider, tanbeta) : ( runCode, xsec, xsecUnc, branchingRatio)
+    bma = {}
+    bpa = {}
+    if options.zdecay == 'bb':
+        bma = sd.bma_bb
+        bpa = sd.bpa_bb
+    elif options.zdecay == 'mumu':
+        bma = sd.bma_mumu
+        bpa = sd.bpa_mumu
     
-    for (tanbeta, collider), (runCode, sinbma, xsec, xsecunc) in scandict.bma.viewitems():
+    
+    for (tanbeta, collider), (runCode, sinbma, xsec, xsecunc) in bma.viewitems():
     #printDictEntry(tanbeta, collider, runCode, sinbma, xsec, xsecunc)
         if tanbeta == '1':
             continue
@@ -221,24 +231,24 @@ if __name__ == '__main__':
         if collider == 'cepc':
             histos['bma_cepc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
             histos['bma_cepc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
-            (rc, xs, xsunc, br) = scandict.gg[('bma','cepc',tanbeta)]
+            (rc, xs, xsunc, br) = sd.gg[('bma','cepc',tanbeta)]
             histos['bma_cepc_scaled'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xs)*float(br))
             histos['bma_cepc_scaled'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsunc)*float(br))
             
         elif collider == 'ilc':
             histos['bma_ilc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
             histos['bma_ilc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
-            (rc, xs, xsunc, br) = scandict.gg[('bma','ilc',tanbeta)]
+            (rc, xs, xsunc, br) = sd.gg[('bma','ilc',tanbeta)]
             histos['bma_ilc_scaled'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xs)*float(br))
             histos['bma_ilc_scaled'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsunc)*float(br))
 
-    for (tanbeta, collider), (runCode, sinbma, xsec, xsecunc) in scandict.bpa.viewitems():
+    for (tanbeta, collider), (runCode, sinbma, xsec, xsecunc) in bpa.viewitems():
         #printDictEntry(tanbeta, collider, runCode, sinbma, xsec, xsecunc)
         if collider == 'cepc':
             histos['bpa_cepc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
             histos['bpa_cepc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
             if tanbeta == '2' or tanbeta == '5' or tanbeta == '10':
-                (rc, xs, xsunc, br) = scandict.gg[('bpa','cepc',tanbeta)]
+                (rc, xs, xsunc, br) = sd.gg[('bpa','cepc',tanbeta)]
                 histos['bpa_cepc_scaled'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xs)*float(br))
                 histos['bpa_cepc_scaled'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsunc)*float(br))
 
@@ -246,30 +256,30 @@ if __name__ == '__main__':
             histos['bpa_ilc'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xsec))
             histos['bpa_ilc'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsecunc))
             if tanbeta == '2' or tanbeta == '5' or tanbeta == '10':
-                (rc, xs, xsunc, br) = scandict.gg[('bpa','ilc',tanbeta)]
+                (rc, xs, xsunc, br) = sd.gg[('bpa','ilc',tanbeta)]
                 histos['bpa_ilc_scaled'].SetPoint(     tanbetaDict[tanbeta]-1, float(tanbeta), float(xs)*float(br))
                 histos['bpa_ilc_scaled'].SetPointError(tanbetaDict[tanbeta]-1, 0             , float(xsunc)*float(br))
 
-    drawComparison(histos['bma_cepc'], histos['bma_ilc' ], "sin(#beta-#alpha) = +1", "CEPC", "ILC", "bma_comparecolliders" )
-    drawComparison(histos['bpa_cepc'], histos['bpa_ilc' ], "sin(#beta+#alpha) = +1", "CEPC", "ILC", "bpa_comparecolliders" )
+    drawComparison(histos['bma_cepc'], histos['bma_ilc' ], "sin(#beta-#alpha) = +1", "CEPC", "ILC", options.zdecay+"_bma_comparecolliders" )
+    drawComparison(histos['bpa_cepc'], histos['bpa_ilc' ], "sin(#beta+#alpha) = +1", "CEPC", "ILC", options.zdecay+"_bpa_comparecolliders" )
 
-    drawComparison(histos['bma_cepc'], histos['bpa_cepc' ], "CEPC", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", "cepc_comparescenarios" )
-    drawComparison(histos['bma_ilc'], histos['bpa_ilc' ], "ILC", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", "ilc_comparescenarios" )  
+    drawComparison(histos['bma_cepc'], histos['bpa_cepc' ], "CEPC", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", options.zdecay+"_cepc_comparescenarios" )
+    drawComparison(histos['bma_ilc'], histos['bpa_ilc' ], "ILC", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1",    options.zdecay+"_ilc_comparescenarios" )  
 
-    drawComparison(histos['bma_cepc'], histos['bma_cepc_scaled'], "CEPC, sin(#beta-#alpha) = +1", "h#rightarrow bb", "h#rightarrow gg", "bma_cepc_bbggcomparison" )
-    drawComparison(histos['bma_ilc' ], histos['bma_ilc_scaled' ], "ILC, sin(#beta-#alpha) = +1" , "h#rightarrow bb", "h#rightarrow gg", "bma_ilc_bbggcomparison" )
-    drawComparison(histos['bpa_cepc'], histos['bpa_cepc_scaled'], "CEPC, sin(#beta+#alpha) = +1", "h#rightarrow bb", "h#rightarrow gg", "bpa_cepc_bbggcomparison" )
-    drawComparison(histos['bpa_ilc' ], histos['bpa_ilc_scaled' ], "ILC, sin(#beta+#alpha) = +1" , "h#rightarrow bb", "h#rightarrow gg", "bpa_ilc_bbggcomparison" )
+    drawComparison(histos['bma_cepc'], histos['bma_cepc_scaled'], "CEPC, sin(#beta-#alpha) = +1", "h#rightarrow bb", "h#rightarrow gg", options.zdecay+"_bma_cepc_bbggcomparison" )
+    drawComparison(histos['bma_ilc' ], histos['bma_ilc_scaled' ], "ILC, sin(#beta-#alpha) = +1" , "h#rightarrow bb", "h#rightarrow gg", options.zdecay+"_bma_ilc_bbggcomparison" )
+    drawComparison(histos['bpa_cepc'], histos['bpa_cepc_scaled'], "CEPC, sin(#beta+#alpha) = +1", "h#rightarrow bb", "h#rightarrow gg", options.zdecay+"_bpa_cepc_bbggcomparison" )
+    drawComparison(histos['bpa_ilc' ], histos['bpa_ilc_scaled' ], "ILC, sin(#beta+#alpha) = +1" , "h#rightarrow bb", "h#rightarrow gg", options.zdecay+"_bpa_ilc_bbggcomparison" )
 
-    drawComparison(histos['bma_cepc_scaled'], histos['bpa_cepc_scaled'], "CEPC, h#rightarrow gg", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", "cepc_gg_comparescenarios")
-    drawComparison(histos['bma_ilc_scaled' ], histos['bpa_ilc_scaled' ], "ILC, h#rightarrow gg" , "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", "ilc_gg_comparescenarios")
+    drawComparison(histos['bma_cepc_scaled'], histos['bpa_cepc_scaled'], "CEPC, h#rightarrow gg", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", options.zdecay+"_cepc_gg_comparescenarios")
+    drawComparison(histos['bma_ilc_scaled' ], histos['bpa_ilc_scaled' ], "ILC, h#rightarrow gg" , "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", options.zdecay+"_ilc_gg_comparescenarios")
 
     
-    histos['bma_cepc_ratio'] = makeRatio(histos['bma_cepc'], histos['bma_cepc_scaled'], "bma_cepc_ratio")
-    histos['bpa_cepc_ratio'] = makeRatio(histos['bpa_cepc'], histos['bpa_cepc_scaled'], "bpa_cepc_ratio")
-    histos['bma_ilc_ratio' ] = makeRatio(histos['bma_ilc' ], histos['bma_ilc_scaled' ], "bma_ilc_ratio")
-    histos['bpa_ilc_ratio' ] = makeRatio(histos['bpa_ilc' ], histos['bpa_ilc_scaled' ], "bpa_ilc_ratio")
+    histos['bma_cepc_ratio'] = makeRatio(histos['bma_cepc'], histos['bma_cepc_scaled'], options.zdecay+"_bma_cepc_ratio")
+    histos['bpa_cepc_ratio'] = makeRatio(histos['bpa_cepc'], histos['bpa_cepc_scaled'], options.zdecay+"_bpa_cepc_ratio")
+    histos['bma_ilc_ratio' ] = makeRatio(histos['bma_ilc' ], histos['bma_ilc_scaled' ], options.zdecay+"_bma_ilc_ratio")
+    histos['bpa_ilc_ratio' ] = makeRatio(histos['bpa_ilc' ], histos['bpa_ilc_scaled' ], options.zdecay+"_bpa_ilc_ratio")
 
-    drawComparison(histos['bma_cepc_ratio'], histos['bpa_cepc_ratio'], "CEPC, h#rightarrow b#bar{b} / h#rightarrow gg", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", "cepc_ratio_comparescenarios")
-    drawComparison(histos['bma_ilc_ratio' ], histos['bpa_ilc_ratio' ], "ILC, h#rightarrow b#bar{b} / h#rightarrow gg" , "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", "ilc_ratio_comparescenarios")
+    drawComparison(histos['bma_cepc_ratio'], histos['bpa_cepc_ratio'], "CEPC, h#rightarrow b#bar{b} / h#rightarrow gg", "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", options.zdecay+"_cepc_ratio_comparescenarios")
+    drawComparison(histos['bma_ilc_ratio' ], histos['bpa_ilc_ratio' ], "ILC, h#rightarrow b#bar{b} / h#rightarrow gg" , "sin(#beta-#alpha) = +1", "sin(#beta+#alpha) = +1", options.zdecay+"_ilc_ratio_comparescenarios")
     
