@@ -353,7 +353,7 @@ if __name__ == '__main__':
                 h_nocut['e_m'].Fill( p.M, w )
                 h_nocut['e_spin'].Fill( p.Spin, w )
                 p4temp = ROOT.TLorentzVector()
-                p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E=
+                p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
                 p4_e += p4temp
                 num_e += 1
                 
