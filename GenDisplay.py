@@ -91,7 +91,8 @@ if __name__ == '__main__':
              # 'truerecoZ_sumpt',
              'recoZ_sumpt',
              #, 'recoh_sumpt'
-             'hz_deltaphi', 'truerecohz_deltaphi', 'recohz_deltaphi', 'hz_deltaR', 'truerecohz_deltaR', 'recohz_deltaR'
+             'hz_deltaphi', 'truerecohz_deltaphi', 'recohz_deltaphi', 'hz_deltaR', 'truerecohz_deltaR', 'recohz_deltaR',
+             'truerecoil', 'recorecoil'
 
     ]
 
