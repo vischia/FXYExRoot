@@ -599,7 +599,7 @@ if __name__ == '__main__':
         # Recoil study
         pcm2 = math.pow(p4_e.P(), 2)
         pz2  = math.pow(p4_Z.P(), 2)
-        sumpprod = recoZ_products[0] + recoZ_products[1]
+        sumprod = recoZ_products[0] + recoZ_products[1]
         pp2  = math.pow(sumprod.P(), 2)
         h_nocut['truerecoil'].Fill(math.sqrt(pcm2-pz2), w)
         h_nocut['recorecoil'].Fill(math.sqrt(pcm2-pp2), w)
