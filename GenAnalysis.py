@@ -158,6 +158,7 @@ if __name__ == '__main__':
     h_nocut['e_m']    = ROOT.TH1F("e_m",   "e mass [GeV]",200,0.,200.)
     h_nocut['e_spin'] = ROOT.TH1F("e_spin","e spin [GeV]",6,-3.,3.)
 
+    
     # Gen h
     h_nocut['h_pt']   = ROOT.TH1F("h_pt","h p_{T} [GeV]",100,0,500)
     h_nocut['h_eta']  = ROOT.TH1F("h_eta","h #eta",100,-5,5)
@@ -264,8 +265,10 @@ if __name__ == '__main__':
     h_nocut['inclusive_b_eta'] = ROOT.TH1F("inclusive_b_eta","Inclusive b #eta",100,-5,5)
     h_nocut['inclusive_b_phi'] = ROOT.TH1F("inclusive_b_phi","Inclusive b #phi",80,-3.2,3.2)
 
-    
-    
+    # Recoil study
+    h_nocut['truerecoil']    = ROOT.TH1F("truerecoil",   "Recoil mass #sqrt{p_{CM}^{2} - p_{Z}^{2}} [GeV]",200,0.,200.)
+    h_nocut['recorecoil']    = ROOT.TH1F("recorecoil",   "Recoil mass #sqrt{p_{CM}^{2} - (p_{#mu^{+}} + p_{#mu^{-}} )^{2}} [GeV]",200,0.,200.)
+
     for key in h_nocut.keys():
         h_cut[key] = h_nocut[key].Clone(h_nocut[key].GetName())
         h_cut[key].Sumw2()
@@ -349,6 +352,9 @@ if __name__ == '__main__':
                 h_nocut['e_phi'].Fill( p.Phi, w )
                 h_nocut['e_m'].Fill( p.M, w )
                 h_nocut['e_spin'].Fill( p.Spin, w )
+                p4temp = ROOT.TLorentzVector()
+                p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E=
+                p4_e += p4temp
                 num_e += 1
                 
             # Intermediate state h
@@ -589,6 +595,14 @@ if __name__ == '__main__':
         h_nocut['recoz_internal_deltaR']  .Fill( deltaR(  recoZ_products[0], recoZ_products[1]), w) 
         h_nocut['recoh_internal_deltaphi'].Fill( deltaPhi(recoh_products[0], recoh_products[1]), w) 
         h_nocut['recoh_internal_deltaR']  .Fill( deltaR(  recoh_products[0], recoh_products[1]), w) 
+
+        # Recoil study
+        pcm2 = math.pow(p4_e.P(), 2)
+        pz2  = math.pow(p4_Z.P(), 2)
+        sumpprod = recoZ_products[0] + recoZ_products[1]
+        pp2  = math.pow(sumprod.P(), 2)
+        h_nocut['truerecoil'].Fill(math.sqrt(pcm2-pz2), w)
+        h_nocut['recorecoil'].Fill(math.sqrt(pcm2-pp2), w)
 
             
     # END loop over entries
