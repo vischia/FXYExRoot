@@ -126,6 +126,8 @@ if __name__ == '__main__':
     print "Opening file {initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bma[(tanbeta,collider)][0])
     bma  = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bma[(tanbeta,collider)][0]), "READ")
     bpa = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bpa[(tanbeta,collider)][0]), "READ")
+
+    sm = ROOT.TFile("{initialDirectory}Rui_cepc_sm{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=sd.sm[(collider,'sm{zdecay}'.format(zdecay=zdecay))][0]), "READ")
     
     for h in hList:
         h_bma = bma.Get(h)
@@ -137,12 +139,17 @@ if __name__ == '__main__':
         h_bpa = bpa.Get(h)
         h_bpa.SetName(h_bpa.GetName()+'bpa')
 
-        h_bma.SetLineColor(1)
+        h_sm = sm.Get(h)
+        h_sm.SetName(h_sm.GetName()+'sm')
+        
+        h_bma.SetLineColor(4)
         h_bpa.SetLineColor(2)
-
+        h_sm.SetLineColor(3)
+        
         h_bma.SetLineWidth(3)
         h_bpa.SetLineWidth(3)
-
+        h_sm.SetLineWidth(3)
+        
         h_comp_bma = ROOT.TH1F()
         h_comp_bpa = ROOT.TH1F()
 
@@ -163,16 +170,21 @@ if __name__ == '__main__':
         h_bma.SetMaximum(2*h_bma.GetMaximum())
         if h_bpa.GetMaximum() > h_bma.GetMaximum():
             h_bma.SetMaximum(2*h_bpa.GetMaximum())
+        if h_sm.GetMaximum() > h_bma.GetMaximum():
+            h_bma.SetMaximum(2*h_sm.GetMaximum())
         h_bma.Draw("hist")
         h_bpa.Draw("samehist")
+        h_sm.Draw("samehist")
 
         if h in logYList:
             ROOT.gPad.SetLogy()
-
+        # With SM added, always logy
+        ROOT.gPad.SetLogy()
+            
         leg = ROOT.TLegend(0.8,0.8,0.99,0.99)
         leg.AddEntry(h_bma, "SM-like", "l")
         leg.AddEntry(h_bpa, "Wrong-sign", "l")
-
+        leg.AddEntry(h_sm, "SM", "l")
         
         if h_comp_bma.GetName().find('sumpt') != -1:
             h_comp_bma.SetLineColor(1)
