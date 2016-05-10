@@ -29,7 +29,8 @@ def main():
     usage = 'usage: %prog [options]'
     parser = optparse.OptionParser(usage)
     parser.add_option('-c', '--collider',    dest='collider',    help='collider [ilc, cepc]',              default=None,       type='string')
-    parser.add_option('-g', '--gluons',       dest='gluons',       help='h to gluons',                     default=False, action='store_true')
+    # Deactivated madspin
+    #parser.add_option('-g', '--gluons',       dest='gluons',       help='h to gluons',                     default=False, action='store_true')
     parser.add_option('-n', '--njobs',       dest='njobs',       help='# jobs to run in parallel',                              default=0,           type='int')
     parser.add_option('-d', '--debug',       dest='debug',       help='Run in debug mode: verbosity verbosity verbosity',       default=False, action='store_true')
 

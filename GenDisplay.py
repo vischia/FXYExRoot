@@ -51,7 +51,7 @@ def main(argv = None):
                       default="madgraph",
                       help="input samples. The options are: madgraph or whizard [default: %default]")
     parser.add_option("-i", "--inputDir", default="", help="Input directory")
-    parser.add_option("-g", "--gluons", default=False, help="h to gluons", action="store_true")
+    parser.add_option("-z", "--zdecay", dest='zdecay', help="z decay [bb|mumu]")
     parser.add_option('-t', '--tanbeta', dest='tanbeta', help='Specify the desired tan(beta) [2 --> 50]')
     parser.add_option('-c', '--collider', dest='collider', help='Specify the desired collider [cepc|ilc]')
     parser.add_option("-o", "--outputDir", default="plots", help="Output directory")
@@ -70,7 +70,8 @@ if __name__ == '__main__':
 
     tanbeta = options.tanbeta
     collider = options.collider
-
+    zdecay = options.zdecay
+    
     if options.batch:
         ROOT.gROOT.SetBatch()
         print cTerm.GREEN+"Run in batch mode."+cTerm.END
@@ -97,26 +98,34 @@ if __name__ == '__main__':
     logYList = [ 'hz_deltaphi', 'truerecohz_deltaphi', 'recohz_deltaphi', 'hz_deltaR', 'truerecohz_deltaR', 'recohz_deltaR' ]
 
     
-    fullOutputDir = '{outputDir}/{collider}_{tanbeta}'.format(outputDir=options.outputDir,collider=collider,tanbeta=tanbeta)
+    fullOutputDir = '{outputDir}/{collider}_{tanbeta}_z{zdecay}'.format(outputDir=options.outputDir,collider=collider,tanbeta=tanbeta,zdecay=zdecay)
     os.system('mkdir -p {fullOutputDir}'.format(fullOutputDir=fullOutputDir))
 
     # Open input files
 
     initialDirectory='../'
-    if options.gluons:
-        initialDirectory='../'
 
     print 'Fetching plots from {initialDirectory}'.format(initialDirectory=initialDirectory)
 
     # Dictionary Format: (tanbeta, collider) : (runCode, sinbma, xsec) )
-
+    
+    bma = {}
+    bpa = {}
+    if zdecay == 'bb':
+        bma = sd.bma_bb
+        bpa = sd.bpa_bb
+    elif zdecay == 'mumu':
+        bma = sd.bma_mumu
+        bpa = sd.bpa_mumu
+    
+    
     # No madspin anymore
-    #print "Opening file {initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0])
-    #bma  = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0]), "READ")
-    #bpa = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bpa[(tanbeta,collider)][0]), "READ")
-    print "Opening file {initialDirectory}Rui_cepc_bb/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0])
-    bma  = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0]), "READ")
-    bpa = ROOT.TFile("{initialDirectory}Rui_cepc_bb/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bpa[(tanbeta,collider)][0]), "READ")
+    #print "Opening file {initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0])
+    #bma  = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0]), "READ")
+    #bpa = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bpa[(tanbeta,collider)][0]), "READ")
+    print "Opening file {initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bma[(tanbeta,collider)][0])
+    bma  = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bma[(tanbeta,collider)][0]), "READ")
+    bpa = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bpa[(tanbeta,collider)][0]), "READ")
     
     for h in hList:
         h_bma = bma.Get(h)

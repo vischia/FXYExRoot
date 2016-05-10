@@ -254,6 +254,10 @@ if __name__ == '__main__':
     h_nocut['recoz_internal_deltaR']   = ROOT.TH1F("recoz_internal_deltaR","#Delta R between Z daughters",50,0.,5.)
 
 
+    h_nocut['inclusive_mu_m']   = ROOT.TH1F("inclusive_mu_m",  "Inclusive muon mass [GeV]",50,0,10)
+    h_nocut['inclusive_mu_pt']  = ROOT.TH1F("inclusive_mu_pt", "Inclusive muon p_{T} [GeV]",100,0,500)
+    h_nocut['inclusive_mu_eta'] = ROOT.TH1F("inclusive_mu_eta","Inclusive muon #eta",100,-5,5)
+    h_nocut['inclusive_mu_phi'] = ROOT.TH1F("inclusive_mu_phi","Inclusive muon #phi",80,-3.2,3.2)
     
     h_nocut['inclusive_b_m']   = ROOT.TH1F("inclusive_b_m",  "Inclusive b mass [GeV]",50,0,10)
     h_nocut['inclusive_b_pt']  = ROOT.TH1F("inclusive_b_pt", "Inclusive b p_{T} [GeV]",100,0,500)
@@ -299,13 +303,14 @@ if __name__ == '__main__':
         p4_recoh = ROOT.TLorentzVector()
         p4_recoZ = ROOT.TLorentzVector()
 
-        truerecoh_bs = []
-        truerecoZ_bs = []
-        recoh_bs = []
-        recoZ_bs = []
+        truerecoh_products = []
+        truerecoZ_products = []
+        recoh_products = []
+        recoZ_products = []
 
         
         init_bList = []
+        muList = []
         
         truerecoh_sumpt = 0
         truerecoZ_sumpt = 0
@@ -317,7 +322,8 @@ if __name__ == '__main__':
         num_h = 0
         num_Z = 0
         num_b = 0
-
+        num_m = 0
+        
         w=1
         
         for iev in Event:
@@ -365,6 +371,22 @@ if __name__ == '__main__':
                 h_nocut['Z_m'].Fill( p.M, w )
                 h_nocut['Z_spin'].Fill( p.Spin, w )
                 num_Z += 1
+            # Final state mus
+            if math.fabs(p.PID) == 13:
+                h_nocut['inclusive_b_pt'].Fill( p.PT, w )
+                h_nocut['inclusive_b_eta'].Fill( p.Eta, w )
+                h_nocut['inclusive_b_phi'].Fill( p.Phi, w )
+                h_nocut['inclusive_b_m'].Fill( p.M, w )
+                num_m += 1
+                # Build true Z from muon daughters
+                if p.Mother1 != -1:
+                    if math.fabs(Particles[p.Mother1].PID) == 23:
+                        p4temp = ROOT.TLorentzVector()
+                        p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
+                        p4_truerecoZ += p4temp
+                        truerecoZ_sumpt += p.PT
+                        truerecoZ_products.append(p4temp)
+                        muList.append(b_p4temp)
             # Final state b
             if math.fabs(p.PID) == 5:
                 #and p.Status == 2:
@@ -380,7 +402,7 @@ if __name__ == '__main__':
                         p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
                         p4_truerecoh += p4temp
                         truerecoh_sumpt += p.PT
-                        truerecoh_bs.append(p4temp)
+                        truerecoh_products.append(p4temp)
                         
                 # Build true Z from b daughters
                 if p.Mother1 != -1:
@@ -389,7 +411,7 @@ if __name__ == '__main__':
                         p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
                         p4_truerecoZ += p4temp
                         truerecoZ_sumpt += p.PT
-                        truerecoZ_bs.append(p4temp)
+                        truerecoZ_products.append(p4temp)
 
                 # Build the b list
                 b_p4temp = ROOT.TLorentzVector()
@@ -456,7 +478,7 @@ if __name__ == '__main__':
         # z pair: the others
         zindex1 = -1
         zindex2 = -2
-        
+
         t_ind1=0
         for first in bList:
             t_ind2=0
@@ -472,21 +494,29 @@ if __name__ == '__main__':
                         
         p4_recoh += bList[index1]
         p4_recoh += bList[index2]
-        recoh_bs.append(bList[index1])
-        recoh_bs.append(bList[index2])
+        recoh_products.append(bList[index1])
+        recoh_products.append(bList[index2])
         
         indexz = 0
-        for b in bList:
-            if indexz != index1 and indexz != index2:
-                if zindex1 == -1:
-                    zindex1 = indexz
-                else:
-                    zindex2 = indexz
-                p4_recoZ += b
-            indexz += 1
-        recoZ_bs.append(bList[zindex1])
-        recoZ_bs.append(bList[zindex2])
-
+        if options.inputDir.find('mumu') == -1:
+            for b in bList:
+                if indexz != index1 and indexz != index2:
+                    if zindex1 == -1:
+                        zindex1 = indexz
+                    else:
+                        zindex2 = indexz
+                    p4_recoZ += b
+                indexz += 1
+            recoZ_products.append(bList[zindex1])
+            recoZ_products.append(bList[zindex2])
+        else:
+            if options.inputDir.find('sm') == -1:
+                recoZ_products.append(muList[0])
+                recoZ_products.append(muList[1])
+            else:
+                recoZ_products.append(ROOT.TLorentzVector())
+                recoZ_products.append(ROOT.TLorentzVector())
+                
         # Fill true h from daughters histos
         h_nocut['recoh_pt'].Fill(  p4_recoh.Pt(), w )
         h_nocut['recoh_eta'].Fill( p4_recoh.Eta(), w )
@@ -528,8 +558,8 @@ if __name__ == '__main__':
 
 
         # Debug
-        if len(truerecoZ_bs) != 2 or len(truerecoh_bs) != 2:
-            print "Z bs: ", len(truerecoZ_bs), ", h bs: ", len(truerecoh_bs)
+        if len(truerecoZ_products) != 2 or len(truerecoh_products) != 2:
+            print "Z bs: ", len(truerecoZ_products), ", h bs: ", len(truerecoh_products)
             for p in Particles:
                 print "-------------"
                 print "PID: ", p.PID
@@ -539,16 +569,26 @@ if __name__ == '__main__':
                 print "Mother2 ID:", Particles[p.Mother2].PID if p.Mother2 != -1 else -1
                 print "Status: ", p.Status
             
-        
-        h_nocut['truerecoz_internal_deltaphi'].Fill( deltaPhi(truerecoZ_bs[0], truerecoZ_bs[1]), w)
-        h_nocut['truerecoz_internal_deltaR']  .Fill( deltaR(  truerecoZ_bs[0], truerecoZ_bs[1]), w)
-        h_nocut['truerecoh_internal_deltaphi'].Fill( deltaPhi(truerecoh_bs[0], truerecoh_bs[1]), w)
-        h_nocut['truerecoh_internal_deltaR']  .Fill( deltaR(  truerecoh_bs[0], truerecoh_bs[1]), w)
+                
+        if options.inputDir.find('sm') != -1:
+            if len(truerecoh_products) == 0:
+                truerecoh_products = []
+                truerecoh_products.append(ROOT.TLorentzVector())
+                truerecoh_products.append(ROOT.TLorentzVector())
+            if len(truerecoZ_products) == 0:
+                truerecoZ_products = []
+                truerecoZ_products.append(ROOT.TLorentzVector())
+                truerecoZ_products.append(ROOT.TLorentzVector())
 
-        h_nocut['recoz_internal_deltaphi'].Fill( deltaPhi(recoZ_bs[0], recoZ_bs[1]), w) 
-        h_nocut['recoz_internal_deltaR']  .Fill( deltaR(  recoZ_bs[0], recoZ_bs[1]), w) 
-        h_nocut['recoh_internal_deltaphi'].Fill( deltaPhi(recoh_bs[0], recoh_bs[1]), w) 
-        h_nocut['recoh_internal_deltaR']  .Fill( deltaR(  recoh_bs[0], recoh_bs[1]), w) 
+        h_nocut['truerecoz_internal_deltaphi'].Fill( deltaPhi(truerecoZ_products[0], truerecoZ_products[1]), w)
+        h_nocut['truerecoz_internal_deltaR']  .Fill( deltaR(  truerecoZ_products[0], truerecoZ_products[1]), w)
+        h_nocut['truerecoh_internal_deltaphi'].Fill( deltaPhi(truerecoh_products[0], truerecoh_products[1]), w)
+        h_nocut['truerecoh_internal_deltaR']  .Fill( deltaR(  truerecoh_products[0], truerecoh_products[1]), w)
+
+        h_nocut['recoz_internal_deltaphi'].Fill( deltaPhi(recoZ_products[0], recoZ_products[1]), w) 
+        h_nocut['recoz_internal_deltaR']  .Fill( deltaR(  recoZ_products[0], recoZ_products[1]), w) 
+        h_nocut['recoh_internal_deltaphi'].Fill( deltaPhi(recoh_products[0], recoh_products[1]), w) 
+        h_nocut['recoh_internal_deltaR']  .Fill( deltaR(  recoh_products[0], recoh_products[1]), w) 
 
             
     # END loop over entries
