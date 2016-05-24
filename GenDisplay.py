@@ -55,6 +55,7 @@ def main(argv = None):
     parser.add_option('-t', '--tanbeta', dest='tanbeta', help='Specify the desired tan(beta) [2 --> 50]')
     parser.add_option('-c', '--collider', dest='collider', help='Specify the desired collider [cepc|ilc]')
     parser.add_option("-o", "--outputDir", default="plots", help="Output directory")
+    parser.add_option('-n', '--normalizeToOne', dest='normalizeToOne', action='store_true')
     parser.add_option("-q","--quit",
                       action="store_true",
                       help="quit after reading tree otherwise prompt for keyboard to continue.")
@@ -71,6 +72,7 @@ if __name__ == '__main__':
     tanbeta = options.tanbeta
     collider = options.collider
     zdecay = options.zdecay
+    normToOne = options.normalizeToOne
     
     if options.batch:
         ROOT.gROOT.SetBatch()
@@ -92,8 +94,11 @@ if __name__ == '__main__':
              'recoZ_sumpt',
              #, 'recoh_sumpt'
              'hz_deltaphi', 'truerecohz_deltaphi', 'recohz_deltaphi', 'hz_deltaR', 'truerecohz_deltaR', 'recohz_deltaR',
-             'truerecoil', 'recorecoil'
+             'truerecoil', 'recorecoil', 'truealtrecoil', 'recoaltrecoil', 'recoz_acop',
+             'truerecoz_internal_deltaphi', 'truerecoz_internal_deltaR', 'truerecoh_internal_deltaphi', 'truerecoh_internal_deltaR', 'recoz_internal_deltaphi', 'recoz_internal_deltaR', 'recoh_internal_deltaphi', 'recoh_internal_deltaR',
+             'cut_truerecoil', 'cut_recorecoil', 'cut_truealtrecoil', 'cut_recoaltrecoil', 'cut_recoz_acop', 'cut_truerecoz_internal_deltaphi', 'cut_truerecoz_internal_deltaR', 'cut_truerecoh_internal_deltaphi', 'cut_truerecoh_internal_deltaR', 'cut_recoz_internal_deltaphi', 'cut_recoz_internal_deltaR', 'cut_recoh_internal_deltaphi', 'cut_recoh_internal_deltaR', 'cut_recoh_pt', 'cut_recoh_eta', 'cut_recoh_phi', 'cut_recoh_m', 'cut_recoZ_pt', 'cut_recoZ_eta', 'cut_recoZ_phi', 'cut_recoZ_m', 'cut_recoh_deltapt', 'cut_recoh_deltaeta', 'cut_recoh_deltaphi', 'cut_recoh_deltam', 'cut_recoh_resm', 'cut_recoZ_deltapt', 'cut_recoZ_deltaeta', 'cut_recoZ_deltaphi', 'cut_recoZ_deltam', 'cut_recoZ_resm', 'cut_recoZ_sumpt', 'cut_recoh_sumpt', 'cut_hz_deltaphi', 'cut_truerecohz_deltaphi', 'cut_recohz_deltaphi', 'cut_hz_deltaR', 'cut_truerecohz_delta,R' 'cut_recohz_deltaR'
 
+             
     ]
 
     logYList = [ 'hz_deltaphi', 'truerecohz_deltaphi', 'recohz_deltaphi', 'hz_deltaR', 'truerecohz_deltaR', 'recohz_deltaR' ]
@@ -110,25 +115,29 @@ if __name__ == '__main__':
 
     # Dictionary Format: (tanbeta, collider) : (runCode, sinbma, xsec) )
     
-    bma = {}
-    bpa = {}
+    bmad = {}
+    bpad = {}
     if zdecay == 'bb':
-        bma = sd.bma_bb
-        bpa = sd.bpa_bb
+        bmad = sd.bma_bb
+        bpad = sd.bpa_bb
     elif zdecay == 'mumu':
-        bma = sd.bma_mumu
-        bpa = sd.bpa_mumu
+        bmad = sd.bma_mumu
+        bpad = sd.bpa_mumu
     
     
     # No madspin anymore
     #print "Opening file {initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0])
     #bma  = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bma[(tanbeta,collider)][0]), "READ")
     #bpa = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}_decayed_1/results_anal.root".format(initialDirectory=initialDirectory,runCode=sd.bpa[(tanbeta,collider)][0]), "READ")
-    print "Opening file {initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bma[(tanbeta,collider)][0])
-    bma  = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bma[(tanbeta,collider)][0]), "READ")
-    bpa = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bpa[(tanbeta,collider)][0]), "READ")
+    print "Opening file {initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bmad[('{tanbeta}'.format(tanbeta=tanbeta),'{collider}'.format(collider=collider))][0])
+    bma  = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bmad[ ('{tanbeta}'.format(tanbeta=tanbeta),'{collider}'.format(collider=collider))][0]), "READ")
+    bpa = ROOT.TFile("{initialDirectory}Rui_cepc_{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=bpad[('{tanbeta}'.format(tanbeta=tanbeta),'{collider}'.format(collider=collider))][0]), "READ")
 
-    sm = ROOT.TFile("{initialDirectory}Rui_cepc_sm{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=sd.sm[(collider,'sm{zdecay}'.format(zdecay=zdecay))][0]), "READ")
+    sm = ROOT.TFile("{initialDirectory}Rui_cepc_sm{zdecay}/Events/run_{runCode}/results_anal.root".format(initialDirectory=initialDirectory,zdecay=zdecay,runCode=sd.sm[('{collider}'.format(collider=collider),'sm{zdecay}'.format(zdecay=zdecay))][0]), "READ")
+
+    bma_xsec = bmad[('{tanbeta}'.format(tanbeta=tanbeta),'{collider}'.format(collider=collider))][2]
+    bpa_xsec = bpad[('{tanbeta}'.format(tanbeta=tanbeta),'{collider}'.format(collider=collider))][2]
+    sm_xsec = sd.sm[('{collider}'.format(collider=collider),'sm{zdecay}'.format(zdecay=zdecay))][1]
     
     for h in hList:
         h_bma = bma.Get(h)
@@ -141,16 +150,48 @@ if __name__ == '__main__':
         h_bpa.SetName(h_bpa.GetName()+'bpa')
 
         h_sm = sm.Get(h)
-        h_sm.SetName(h_sm.GetName()+'sm')
-        
+        if h_sm:
+            h_sm.SetName(h_sm.GetName()+'sm')
+            h_sm.SetLineColor(3)
+            h_sm.SetLineWidth(3)
+            
         h_bma.SetLineColor(4)
         h_bpa.SetLineColor(2)
-        h_sm.SetLineColor(3)
+        
         
         h_bma.SetLineWidth(3)
         h_bpa.SetLineWidth(3)
-        h_sm.SetLineWidth(3)
+
+        # Normalize to 250 fb-1
         
+        
+        bma_xsec = bmad[('{tanbeta}'.format(tanbeta=tanbeta),'{collider}'.format(collider=collider))][2]
+        bpa_xsec = bpad[('{tanbeta}'.format(tanbeta=tanbeta),'{collider}'.format(collider=collider))][2]
+        sm_xsec = sd.sm[('{collider}'.format(collider=collider),'sm{zdecay}'.format(zdecay=zdecay))][1]
+
+        print "bma: ", bma_xsec
+        print "bpa: ", bpa_xsec
+        print "sm: ", sm_xsec
+        h_bma.Scale( 250000. * float(bma_xsec) / 1000.)
+        h_bpa.Scale( 250000. * float(bpa_xsec) / 1000.)
+        if h_sm:
+            h_sm.Scale( 250000. * float(sm_xsec) / 1000.)
+
+
+        print h_bma.Integral()
+        print h_bpa.Integral()
+        if h_sm:
+            print h_sm.Integral()
+
+        if normToOne:
+            if h_bma.Integral() != 0:
+                h_bma.Scale( 1. / float(h_bma.Integral()) )
+            if h_bpa.Integral() != 0:
+                h_bpa.Scale( 1. / float(h_bpa.Integral()) )
+            if h_sm:
+                if h_sm.Integral() != 0:
+                    h_sm.Scale( 1. / float(h_sm.Integral()) )
+            
         h_comp_bma = ROOT.TH1F()
         h_comp_bpa = ROOT.TH1F()
 
@@ -171,11 +212,13 @@ if __name__ == '__main__':
         h_bma.SetMaximum(2*h_bma.GetMaximum())
         if h_bpa.GetMaximum() > h_bma.GetMaximum():
             h_bma.SetMaximum(2*h_bpa.GetMaximum())
-        if h_sm.GetMaximum() > h_bma.GetMaximum():
-            h_bma.SetMaximum(2*h_sm.GetMaximum())
+        if h_sm:
+            if h_sm.GetMaximum() > h_bma.GetMaximum():
+                h_bma.SetMaximum(2*h_sm.GetMaximum())
         h_bma.Draw("hist")
         h_bpa.Draw("samehist")
-        h_sm.Draw("samehist")
+        if h_sm:
+            h_sm.Draw("samehist")
 
         if h in logYList:
             ROOT.gPad.SetLogy()
@@ -185,7 +228,8 @@ if __name__ == '__main__':
         leg = ROOT.TLegend(0.8,0.8,0.99,0.99)
         leg.AddEntry(h_bma, "SM-like", "l")
         leg.AddEntry(h_bpa, "Wrong-sign", "l")
-        leg.AddEntry(h_sm, "SM", "l")
+        if h_sm:
+            leg.AddEntry(h_sm, "SM backgrounds", "l")
         
         if h_comp_bma.GetName().find('sumpt') != -1:
             h_comp_bma.SetLineColor(1)
@@ -199,9 +243,7 @@ if __name__ == '__main__':
 
         leg.Draw()
         c.Print('{fullOutputDir}/{h}.png'.format(fullOutputDir=fullOutputDir,h=h))
-        
-
-    
+        c.Print('{fullOutputDir}/{h}.pdf'.format(fullOutputDir=fullOutputDir,h=h))
         
         
     if options.quit == False:

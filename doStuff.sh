@@ -47,25 +47,44 @@ elif  [ "$1" = "runbatch" ]; then
     python runBatch.py -c ilc_smbb    -n 4
     python runBatch.py -c ilc_smmumu  -n 4 
 elif  [ "$1" = "display" ]; then
-    python GenDisplay.py -o plots/ -c cepc -b -z bb -t 2
-    python GenDisplay.py -o plots/ -c ilc  -b -z bb -t 2
-    python GenDisplay.py -o plots/ -c cepc -b -z bb -t 5
-    python GenDisplay.py -o plots/ -c ilc  -b -z bb -t 5
-    python GenDisplay.py -o plots/ -c cepc -b -z bb -t 10
-    python GenDisplay.py -o plots/ -c ilc  -b -z bb -t 10
-    python GenDisplay.py -o plots/ -c cepc -b -z bb -t 50
-    python GenDisplay.py -o plots/ -c ilc  -b -z bb -t 50
 
-    python GenDisplay.py -o plots/ -c cepc -b -z mumu -t 2
-    python GenDisplay.py -o plots/ -c ilc  -b -z mumu -t 2
-    python GenDisplay.py -o plots/ -c cepc -b -z mumu -t 5
-    python GenDisplay.py -o plots/ -c ilc  -b -z mumu -t 5
-    python GenDisplay.py -o plots/ -c cepc -b -z mumu -t 10
-    python GenDisplay.py -o plots/ -c ilc  -b -z mumu -t 10
-    python GenDisplay.py -o plots/ -c cepc -b -z mumu -t 50
-    python GenDisplay.py -o plots/ -c ilc  -b -z mumu -t 50
+    NormToOne=''
+    if [ "$2" = "true" ]; then
+        NormToOne='-n'
+    fi
+
+    python GenDisplay.py -o plots/ -c cepc -b -z bb -t 2  ${NormToOne}
+    python GenDisplay.py -o plots/ -c ilc  -b -z bb -t 2  ${NormToOne}
+    python GenDisplay.py -o plots/ -c cepc -b -z bb -t 5  ${NormToOne}
+    python GenDisplay.py -o plots/ -c ilc  -b -z bb -t 5  ${NormToOne}
+    python GenDisplay.py -o plots/ -c cepc -b -z bb -t 10 ${NormToOne}
+    python GenDisplay.py -o plots/ -c ilc  -b -z bb -t 10 ${NormToOne}
+    python GenDisplay.py -o plots/ -c cepc -b -z bb -t 50 ${NormToOne}
+    python GenDisplay.py -o plots/ -c ilc  -b -z bb -t 50 ${NormToOne}
+
+    python GenDisplay.py -o plots/ -c cepc -b -z mumu -t 2   ${NormToOne}
+    python GenDisplay.py -o plots/ -c ilc  -b -z mumu -t 2   ${NormToOne}
+    python GenDisplay.py -o plots/ -c cepc -b -z mumu -t 5   ${NormToOne}
+    python GenDisplay.py -o plots/ -c ilc  -b -z mumu -t 5   ${NormToOne}
+    python GenDisplay.py -o plots/ -c cepc -b -z mumu -t 10  ${NormToOne}
+    python GenDisplay.py -o plots/ -c ilc  -b -z mumu -t 10  ${NormToOne}
+    python GenDisplay.py -o plots/ -c cepc -b -z mumu -t 50  ${NormToOne}
+    python GenDisplay.py -o plots/ -c ilc  -b -z mumu -t 50  ${NormToOne}
 
 elif  [ "$1" = "plotxsec" ]; then
     python plotXsec.py -b -z bb
     python plotXsec.py -b -z mumu
+elif [ "$1" = "clean" ]; then
+    cd ../
+    sh cleanAnal.sh Rui_cepc_bb/
+    sh cleanAnal.sh Rui_ilc_bb/
+    sh cleanAnal.sh Rui_cepc_gg/
+    sh cleanAnal.sh Rui_ilc_gg/
+    sh cleanAnal.sh Rui_cepc_mumu/
+    sh cleanAnal.sh Rui_ilc_mumu/
+    sh cleanAnal.sh Rui_cepc_smbb/
+    sh cleanAnal.sh Rui_cepc_smmumu/
+    sh cleanAnal.sh Rui_ilc_smbb/
+    sh cleanAnal.sh Rui_ilc_smmumu/
+    cd -
 fi
