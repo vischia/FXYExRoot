@@ -62,6 +62,8 @@ def main():
     
     listCommand=""
     for inputDir in dirList:
+        if inputDir.find('02') == -1 and inputDir.find('31') == -1 and inputDir.find('05') == -1 and inputDir.find('34') == -1 and inputDir.find('10') == -1 and inputDir.find('39') == -1 and inputDir.find('30') == -1 and inputDir.find('59') == -1 and inputDir.find('01') == -1:
+            continue
         task_list.append( ('{initialDirectory}Rui_{collider}/Events/{inputDir}'.format(initialDirectory=initialDirectory,collider=opt.collider, inputDir=inputDir)) )
 
 

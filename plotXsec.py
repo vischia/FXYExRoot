@@ -83,6 +83,7 @@ def drawComparison(g1, g2, title, leg1, leg2, outLabel):
         ROOT.gPad.SetLogy()
 
 
+        
     leg.AddEntry(h1, leg1, "l")
     leg.AddEntry(h2, leg2, "l")
 
