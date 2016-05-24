@@ -27,6 +27,7 @@ import sys
 import os
 import math
 import re
+import scandict as sd
 # Check if pyROOT is available
 try:
     #from ROOT import *
@@ -266,16 +267,21 @@ if __name__ == '__main__':
     h_nocut['inclusive_b_phi'] = ROOT.TH1F("inclusive_b_phi","Inclusive b #phi",80,-3.2,3.2)
 
     # Recoil study
-    h_nocut['truerecoil']    = ROOT.TH1F("truerecoil",   "Recoil mass #sqrt{p_{CM}^{2} - p_{Z}^{2}} [GeV]",200,0.,200.)
-    h_nocut['recorecoil']    = ROOT.TH1F("recorecoil",   "Recoil mass #sqrt{p_{CM}^{2} - (p_{#mu^{+}} + p_{#mu^{-}} )^{2}} [GeV]",200,0.,200.)
+    h_nocut['truerecoil']    = ROOT.TH1F("truerecoil",   "Recoil mass #sqrt{p_{CM}^{2} - p_{Z}^{2}} [GeV]",100,0.,200.)
+    h_nocut['recorecoil']    = ROOT.TH1F("recorecoil",   "Recoil mass #sqrt{p_{CM}^{2} - (p_{#mu^{+}} + p_{#mu^{-}} )^{2}} [GeV]",100,0.,200.)
+    h_nocut['truealtrecoil']    = ROOT.TH1F("truealtrecoil",   "Recoil mass #sqrt{p_{CM}^{2} - p_{Z}^{2}} [GeV]",100,0.,200.)
+    h_nocut['recoaltrecoil']    = ROOT.TH1F("recoaltrecoil",   "Recoil mass #sqrt{p_{CM}^{2} - (p_{#mu^{+}} + p_{#mu^{-}} )^{2}} [GeV]",100,0.,200.)
 
+    h_nocut['recoz_acop'] = ROOT.TH1F("recoz_acop","#Delta#phi(d1, d2) from assignment",20,0.,3.2)    
+    
     for key in h_nocut.keys():
-        h_cut[key] = h_nocut[key].Clone(h_nocut[key].GetName())
+        h_cut[key] = h_nocut[key].Clone('cut_'+h_nocut[key].GetName())
         h_cut[key].Sumw2()
         h_nocut[key].Sumw2()
         h_cut[key].SetTitle( h_cut[key].GetTitle() )
         h_nocut[key].SetTitle( h_nocut[key].GetTitle() )
-        
+
+
     # Loop over all events
     for entry in xrange(0, numberOfEntries):
 
@@ -337,7 +343,10 @@ if __name__ == '__main__':
             h_nocut['CouplingQED'].Fill( iev.CouplingQED )
             h_nocut['CouplingQCD'].Fill( iev.CouplingQCD )
             w=iev.Weight
-
+            #print iev.Weigh
+            ## 250 fb-1
+            #w *= 250000.
+        #print "-------------------"
         for p in Particles:
             index += 1
             
@@ -424,7 +433,9 @@ if __name__ == '__main__':
                 b_p4temp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
                 init_bList.append(b_p4temp)
 
-                        
+        #if options.inputDir.find('sm') != -1 and num_h != 0:
+        #    continue
+            
         # end loop over Particles
 
 
@@ -468,8 +479,8 @@ if __name__ == '__main__':
             h_nocut['truerecoZ_resm'].Fill(   ( p4_truerecoZ.M()   - p4_Z.M()) / p4_Z.M(), w  )
         
 
-        h_nocut['truerecoh_sumpt'].Fill(truerecoh_sumpt)
-        h_nocut['truerecoZ_sumpt'].Fill(truerecoZ_sumpt)
+        h_nocut['truerecoh_sumpt'].Fill(truerecoh_sumpt, w)
+        h_nocut['truerecoZ_sumpt'].Fill(truerecoZ_sumpt, w)
 
         # Play with different assignments for the b quarks
         bList = sorted(init_bList, key=lambda v : v.Pt(), reverse=True)
@@ -489,9 +500,9 @@ if __name__ == '__main__':
         for first in bList:
             t_ind2=0
             for second in bList:
-                if first is not second:
+                if first.Pt() != second.Pt() or first.Eta() != second.Eta() or first.Phi() != second.Phi():
                     p4temp = first + second
-                    if(p4temp.M() - 125. < closestMass):
+                    if(math.fabs(p4temp.M() - 120.) < closestMass):
                         closestMass = p4temp.M()
                         index1 = t_ind1
                         index2 = t_ind2
@@ -503,8 +514,9 @@ if __name__ == '__main__':
         recoh_products.append(bList[index1])
         recoh_products.append(bList[index2])
         
-        indexz = 0
+        
         if options.inputDir.find('mumu') == -1:
+            indexz = 0
             for b in bList:
                 if indexz != index1 and indexz != index2:
                     if zindex1 == -1:
@@ -513,6 +525,7 @@ if __name__ == '__main__':
                         zindex2 = indexz
                     p4_recoZ += b
                 indexz += 1
+            #print "i1 ", index1, ", i2 ", index2, ", zi1 ", zindex1, ", zi2 ", zindex2
             recoZ_products.append(bList[zindex1])
             recoZ_products.append(bList[zindex2])
         else:
@@ -551,8 +564,8 @@ if __name__ == '__main__':
         if p4_Z.M() != 0:
             h_nocut['recoZ_resm'].Fill(   ( p4_recoZ.M()   - p4_Z.M()) / p4_Z.M(), w  )
         
-        h_nocut['recoZ_sumpt'].Fill(recoZ_sumpt)
-        h_nocut['recoh_sumpt'].Fill(recoh_sumpt)
+        h_nocut['recoZ_sumpt'].Fill(recoZ_sumpt, w)
+        h_nocut['recoh_sumpt'].Fill(recoh_sumpt, w)
 
         h_nocut['hz_deltaphi']        .Fill(deltaPhi(p4_h        , p4_Z        ), w)
         h_nocut['truerecohz_deltaphi'].Fill(deltaPhi(p4_truerecoh, p4_truerecoZ), w)
@@ -564,7 +577,7 @@ if __name__ == '__main__':
 
 
         # Debug
-        if len(truerecoZ_products) != 2 or len(truerecoh_products) != 2:
+        if False and (len(truerecoZ_products) != 2 or len(truerecoh_products) != 2):
             print "Z bs: ", len(truerecoZ_products), ", h bs: ", len(truerecoh_products)
             for p in Particles:
                 print "-------------"
@@ -597,14 +610,106 @@ if __name__ == '__main__':
         h_nocut['recoh_internal_deltaR']  .Fill( deltaR(  recoh_products[0], recoh_products[1]), w) 
 
         # Recoil study
-        pcm2 = math.pow(p4_e.P(), 2)
-        pz2  = math.pow(p4_Z.P(), 2)
-        sumprod = recoZ_products[0] + recoZ_products[1]
-        pp2  = math.pow(sumprod.P(), 2)
-        h_nocut['truerecoil'].Fill(math.sqrt(pcm2-pz2), w)
-        h_nocut['recorecoil'].Fill(math.sqrt(pcm2-pp2), w)
-
+        sqrts = 0
+        if options.inputDir.find('cepc') != -1:
+            sqrts =250+250
+        elif options.inputDir.find('ilc') != -1:
+            sqrts = 500+500
+        s = math.pow(sqrts, 2)
             
+        trueEZ = p4_Z.E()
+        #recoEZ = recoZ_products[0].Mag() + recoZ_products[1].Mag()
+
+               
+        sumzproducts = recoZ_products[0] + recoZ_products[1]
+        recoEZ = sumzproducts.E()
+        #recoMZ2 = math.pow(recoEZ, 2) - math.pow(sumzproducts.Mag(), 2)
+        recoMZ2 = math.pow(sumzproducts.M(), 2)
+        #MZ2= 91.2*91.2
+        MZ2= math.pow(p4_Z.M(), 2)
+
+        truerecoil = math.sqrt( s + MZ2 - 2*trueEZ*sqrts )
+        #print "s ", s, " + recoMZ2 ", recoMZ2, " -2 * recoEZ ", recoEZ, " * sqrts ", sqrts, " = recorecoil ",  s + MZ2 - 2*recoEZ*sqrts
+        recorecoil2 = math.fabs(s + recoMZ2 - 2*recoEZ*sqrts )
+        recorecoil = math.sqrt( recorecoil2 ) 
+        h_nocut['truerecoil'].Fill(truerecoil, w)
+        h_nocut['recorecoil'].Fill(recorecoil, w)
+
+        pz2  = math.pow(p4_Z.P(), 2)
+        #sumprod = recoZ_products[0] + recoZ_products[1]
+        pp2  = math.pow(sumzproducts.P(), 2)
+        truealtrecoil = math.sqrt(s-pz2)
+        recoaltrecoil = math.sqrt(s-pp2)
+        #print "True recoil: ", truerecoil, ", Reco recoil: ", recorecoil, "True alt recoil: ", truealtrecoil, ", Reco altrecoil: ", recoaltrecoil
+        h_nocut['truealtrecoil'].Fill(truealtrecoil, w)
+        h_nocut['recoaltrecoil'].Fill(recoaltrecoil, w)
+
+        acop = math.fabs(deltaPhi(recoZ_products[0], recoZ_products[1]))
+        h_nocut['recoz_acop'].Fill( acop, w)
+
+        # Cuts
+        if truerecoil < 110. or truerecoil > 130:
+            continue
+        if sumzproducts.M() < 80. or sumzproducts.M() > 100:
+            continue
+        if math.fabs(sumzproducts.Eta()) > 2.:
+            continue
+        if acop < 0.2 or acop > 3:
+            continue
+        
+        h_cut['truerecoil'].Fill(truerecoil, w)
+        h_cut['recorecoil'].Fill(recorecoil, w)
+        h_cut['truealtrecoil'].Fill(truealtrecoil, w)
+        h_cut['recoaltrecoil'].Fill(recoaltrecoil, w)
+        h_cut['recoz_acop'].Fill( acop, w)
+        h_cut['truerecoz_internal_deltaphi'].Fill( deltaPhi(truerecoZ_products[0], truerecoZ_products[1]), w)
+        h_cut['truerecoz_internal_deltaR']  .Fill( deltaR(  truerecoZ_products[0], truerecoZ_products[1]), w)
+        h_cut['truerecoh_internal_deltaphi'].Fill( deltaPhi(truerecoh_products[0], truerecoh_products[1]), w)
+        h_cut['truerecoh_internal_deltaR']  .Fill( deltaR(  truerecoh_products[0], truerecoh_products[1]), w)
+        h_cut['recoz_internal_deltaphi'].Fill( deltaPhi(recoZ_products[0], recoZ_products[1]), w) 
+        h_cut['recoz_internal_deltaR']  .Fill( deltaR(  recoZ_products[0], recoZ_products[1]), w) 
+        h_cut['recoh_internal_deltaphi'].Fill( deltaPhi(recoh_products[0], recoh_products[1]), w) 
+        h_cut['recoh_internal_deltaR']  .Fill( deltaR(  recoh_products[0], recoh_products[1]), w) 
+        # Fill true h from daughters histos
+        h_cut['recoh_pt'].Fill(  p4_recoh.Pt(), w )
+        h_cut['recoh_eta'].Fill( p4_recoh.Eta(), w )
+        h_cut['recoh_phi'].Fill( p4_recoh.Phi(), w )
+        h_cut['recoh_m'].Fill(   p4_recoh.M(), w )
+        # Fill true Z from daughters histos
+        h_cut['recoZ_pt'].Fill(  p4_recoZ.Pt(), w )
+        h_cut['recoZ_eta'].Fill( p4_recoZ.Eta(), w )
+        h_cut['recoZ_phi'].Fill( p4_recoZ.Phi(), w )
+        h_cut['recoZ_m'].Fill(   p4_recoZ.M(), w )
+        # Fill deltas between true h from daughters and gen h
+        h_cut['recoh_deltapt'].Fill(  p4_recoh.Pt()  - p4_h.Pt() , w)
+        h_cut['recoh_deltaeta'].Fill( p4_recoh.Eta() - p4_h.Eta(), w)
+        h_cut['recoh_deltaphi'].Fill( deltaPhi(p4_recoh, p4_h), w)
+        h_cut['recoh_deltam'].Fill(   p4_recoh.M()   - p4_h.M()  , w)
+        if p4_h.M() != 0:
+            h_cut['recoh_resm'].Fill(  ( p4_recoh.M()   - p4_h.M()) / p4_h.M(), w  )
+          
+        # Fill deltas between true Z from daughters and gen Z
+        h_cut['recoZ_deltapt'].Fill(  p4_recoZ.Pt()  - p4_Z.Pt() , w)
+        h_cut['recoZ_deltaeta'].Fill( p4_recoZ.Eta() - p4_Z.Eta(), w)
+        h_cut['recoZ_deltaphi'].Fill( deltaPhi(p4_recoZ, p4_Z), w)
+        h_cut['recoZ_deltam'].Fill(   p4_recoZ.M()   - p4_Z.M()  , w)
+        if p4_Z.M() != 0:
+            h_cut['recoZ_resm'].Fill(   ( p4_recoZ.M()   - p4_Z.M()) / p4_Z.M(), w  )
+        
+        h_cut['recoZ_sumpt'].Fill(recoZ_sumpt, w)
+        h_cut['recoh_sumpt'].Fill(recoh_sumpt, w)
+
+        h_cut['hz_deltaphi']        .Fill(deltaPhi(p4_h        , p4_Z        ), w)
+        h_cut['truerecohz_deltaphi'].Fill(deltaPhi(p4_truerecoh, p4_truerecoZ), w)
+        h_cut['recohz_deltaphi']    .Fill(deltaPhi(p4_recoh    , p4_recoZ    ), w)
+
+        h_cut['hz_deltaR']        .Fill(deltaR(p4_h        , p4_Z        ), w)
+        h_cut['truerecohz_deltaR'].Fill(deltaR(p4_truerecoh, p4_truerecoZ), w)
+        h_cut['recohz_deltaR']    .Fill(deltaR(p4_recoh    , p4_recoZ    ), w)
+        
+
+
+        
     # END loop over entries
 
     outFile.cd()
