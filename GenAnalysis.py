@@ -274,6 +274,8 @@ if __name__ == '__main__':
 
     h_nocut['recoz_acop'] = ROOT.TH1F("recoz_acop","#Delta#phi(d1, d2) from assignment",20,0.,3.2)    
     
+    h_nocut['finalstatemass'] = ROOT.TH1F("finalstatemass" , "Mass of the final state", 100, 0., 500.)
+    
     for key in h_nocut.keys():
         h_cut[key] = h_nocut[key].Clone('cut_'+h_nocut[key].GetName())
         h_cut[key].Sumw2()
@@ -312,6 +314,9 @@ if __name__ == '__main__':
         p4_recoh = ROOT.TLorentzVector()
         p4_recoZ = ROOT.TLorentzVector()
 
+        top = ROOT.TLorentzVector()
+        antitop = ROOT.TLorentzVector()
+        
         truerecoh_products = []
         truerecoZ_products = []
         recoh_products = []
@@ -392,6 +397,12 @@ if __name__ == '__main__':
                 h_nocut['inclusive_b_eta'].Fill( p.Eta, w )
                 h_nocut['inclusive_b_phi'].Fill( p.Phi, w )
                 h_nocut['inclusive_b_m'].Fill( p.M, w )
+                p4tempp = ROOT.TLorentzVector()
+                p4tempp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
+                if p.PID > 0:
+                    top += p4tempp
+                else:
+                    antitop += p4tempp
                 num_m += 1
                 # Build true Z from muon daughters
                 if p.Mother1 != -1:
@@ -409,6 +420,12 @@ if __name__ == '__main__':
                 h_nocut['inclusive_b_eta'].Fill( p.Eta, w )
                 h_nocut['inclusive_b_phi'].Fill( p.Phi, w )
                 h_nocut['inclusive_b_m'].Fill( p.M, w )
+                p4tempp = ROOT.TLorentzVector()
+                p4tempp.SetPtEtaPhiE( p.PT, p.Eta, p.Phi, p.E)
+                if p.PID > 0:
+                    top += p4tempp
+                else:
+                    antitop += p4tempp
                 num_b += 1
                 # Build true h from b daughters
                 if p.Mother1 != -1:
@@ -647,6 +664,11 @@ if __name__ == '__main__':
         acop = math.fabs(deltaPhi(recoZ_products[0], recoZ_products[1]))
         h_nocut['recoz_acop'].Fill( acop, w)
 
+        # Take out ttbar
+        
+        h_nocut['finalstatemass'].Fill(top.M(), w)
+        h_nocut['finalstatemass'].Fill(antitop.M(), w)
+        
         # Cuts
         if truerecoil < 110. or truerecoil > 130:
             continue

@@ -107,6 +107,7 @@ def drawComparison(g1, g2, title, leg1, leg2, outLabel):
     leg.Draw()
     c.Print(options.outputDir+'/'+outLabel+'.png')
     c.Print(options.outputDir+'/'+outLabel+'.pdf')
+    c.Print(options.outputDir+'/'+outLabel+'.C')
     
 
 
